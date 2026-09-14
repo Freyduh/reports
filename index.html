@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Case File Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper: #F3EFE9;
+    --paper-dark: #E8E1D6;
+    --ink: #2B2A28;
+    --ink-soft: #6b6863;
+    --line: #cfc6b8;
+
+    /* Fiona — matte baby pink */
+    --fiona-a: #D9A6B3;
+    --fiona-b: #B8778A;
+    --fiona-tint: #F3E3E7;
+    --fiona-ink: #5c3644;
+
+    /* Mark — matte purple */
+    --mark-a: #8B7BA8;
+    --mark-b: #6B5A87;
+    --mark-tint: #E7E1EF;
+    --mark-ink: #3a2f4d;
+
+    --accent: var(--fiona-a);
+    --accent-deep: var(--fiona-b);
+    --accent-tint: var(--fiona-tint);
+    --accent-ink: var(--fiona-ink);
+  }
+
+  * { box-sizing: border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background: var(--paper);
+    background-image: radial-gradient(circle at 1px 1px, rgba(0,0,0,0.035) 1px, transparent 0);
+    background-size: 22px 22px;
+    color: var(--ink);
+    font-family: 'Inter', system-ui, sans-serif;
+    line-height: 1.5;
+    padding: 32px 20px 80px;
+  }
+  a { color: inherit; }
+  .wrap{ max-width: 900px; margin: 0 auto; }
+
+  /* ---------- Top bar ---------- */
+  .topbar{
+    display:flex; justify-content:space-between; align-items:flex-end;
+    flex-wrap:wrap; gap:18px;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom:16px; margin-bottom: 18px;
+  }
+  .brand h1{ font-family:'Bitter', serif; font-weight:700; font-size: 1.7rem; margin:0; }
+  .brand p{ margin:4px 0 0; color: var(--ink-soft); font-size: 0.85rem; }
+
+  .officer-switch{ display:flex; border: 1.5px solid var(--ink); border-radius: 3px 3px 0 0; overflow:hidden; }
+  .officer-tab{
+    position:relative; padding: 10px 18px 9px; background: var(--paper-dark);
+    color: var(--ink-soft); font-family:'Inter'; font-weight:600; font-size:0.85rem;
+    cursor:pointer; border:none; border-right: 1.5px solid var(--ink); transition: background 0.15s, color 0.15s;
+  }
+  .officer-tab:last-child{ border-right:none; }
+  .officer-tab .dot{ display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:7px; vertical-align:middle; }
+  .officer-tab.fiona .dot{ background: var(--fiona-b); }
+  .officer-tab.mark .dot{ background: var(--mark-b); }
+  .officer-tab.active.fiona{ background: var(--fiona-a); color: var(--fiona-ink); }
+  .officer-tab.active.mark{ background: var(--mark-a); color: var(--mark-ink); }
+
+  .badge-field{ display:flex; align-items:center; gap:8px; margin-top:10px; font-size:0.82rem; color: var(--ink-soft); }
+  .badge-field input{ width:70px; font-family:'JetBrains Mono', monospace; font-size:0.85rem; padding: 5px 7px; border:1px solid var(--line); background:#fff; color:var(--ink); }
+
+  /* ---------- Style / customize panel ---------- */
+  .style-panel{
+    border: 1.5px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+    padding: 16px 20px 18px;
+    margin-bottom: 20px;
+  }
+  .style-panel-head{
+    display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;
+  }
+  .style-panel-head span{
+    font-family:'Bitter', serif; font-weight:600; font-style:italic; color: var(--accent-deep); font-size:1rem;
+  }
+  .preset-row{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom: 14px; }
+  .preset-chip{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    padding: 7px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--ink-soft);
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .preset-chip b{ display:block; font-family:'Inter'; font-weight:600; font-size:0.68rem; letter-spacing:0.3px; margin-bottom:2px; color:var(--ink); }
+  .preset-chip.active{ background: var(--accent); border-color: var(--accent-deep); color:#fff; }
+  .preset-chip.active b{ color:#fff; }
+
+  .custom-grid{
+    display:grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    align-items:end;
+  }
+  @media (max-width: 720px){ .custom-grid{ grid-template-columns: repeat(2,1fr); } }
+  .custom-grid label{ display:block; font-size:0.68rem; text-transform:uppercase; letter-spacing:0.5px; color:var(--ink-soft); margin-bottom:5px; }
+  .custom-grid select, .custom-grid input{
+    width:100%; font-family:'JetBrains Mono', monospace; font-size:0.85rem;
+    padding: 7px 8px; border:1px solid var(--line); border-radius:4px; background: var(--paper); color:var(--ink);
+  }
+  .style-preview{
+    margin-top: 14px;
+    font-family:'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    background: var(--paper);
+    border-radius: 6px;
+    padding: 10px 14px;
+    line-height:1.7;
+  }
+  .style-preview .lead{ color: var(--accent-deep); font-weight:600; }
+
+  /* ---------- Report tabs (folder tabs) ---------- */
+  .report-tabs{ display:flex; gap:6px; padding-left: 4px; }
+  .report-tab{
+    font-family:'Bitter', serif; font-weight:600; font-size:0.92rem;
+    padding: 10px 20px 9px; background: var(--paper-dark); color: var(--ink-soft);
+    border: 1.5px solid var(--line); border-bottom:none; border-radius: 8px 8px 0 0;
+    cursor:pointer; transform: translateY(2px);
+  }
+  .report-tab.active{ background: #fff; color: var(--ink); border-color: var(--ink); transform: translateY(0); position:relative; z-index:2; }
+
+  .card{ background:#fff; border: 1.5px solid var(--ink); border-radius: 0 8px 8px 8px; padding: 0 0 26px; position:relative; z-index:1; }
+
+  /* ---------- Decorative banner ---------- */
+  .banner{
+    background: linear-gradient(160deg, var(--accent) 0%, var(--accent-deep) 100%);
+    color:#fff; text-align:center; padding: 22px 16px 20px; border-radius: 0 6px 0 0;
+    position:relative; overflow:hidden;
+  }
+  .banner::before, .banner::after{ content:""; position:absolute; top:0; bottom:0; width:36%; background: rgba(255,255,255,0.06); }
+  .banner::before{ left:-8%; transform: skewX(-12deg); }
+  .banner::after{ right:-8%; transform: skewX(12deg); }
+  .banner .glyphline{ font-family:'JetBrains Mono', monospace; font-size:0.78rem; letter-spacing:2px; opacity:0.85; position:relative; z-index:1; }
+  .banner h2{ font-family:'Bitter', serif; font-weight:700; font-style:italic; font-size:1.6rem; margin: 4px 0 2px; position:relative; z-index:1; }
+  .banner .sub{ font-size:0.78rem; opacity:0.9; position:relative; z-index:1; font-family:'JetBrains Mono', monospace; }
+
+  /* ---------- Sections ---------- */
+  .section{ padding: 20px 26px 4px; }
+  .section-title{ display:flex; align-items:center; gap:10px; margin: 0 0 14px; }
+  .section-title .st-line{ flex:1; height:1px; background: var(--line); }
+  .section-title .corner-glyph{ color: var(--accent-deep); font-size:0.8rem; line-height:1; }
+  .section-title .st-text{
+    font-family:'Bitter', serif; font-weight:600; font-style:italic; color: var(--accent-deep);
+    font-size:1.02rem; white-space:nowrap;
+  }
+
+  .grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 14px 20px; }
+  .grid.single{ grid-template-columns: 1fr; }
+  @media (max-width:640px){ .grid{ grid-template-columns: 1fr; } }
+
+  label{ display:block; font-size:0.72rem; text-transform: uppercase; letter-spacing: 0.6px; color: var(--ink-soft); margin-bottom:5px; }
+  input[type=text], input[type=date], input[type=time], input[type=number], textarea, select{
+    width:100%; font-family:'Inter'; font-size:0.92rem; color: var(--ink); background: var(--paper);
+    border: 1px solid var(--line); border-radius: 4px; padding: 8px 10px;
+  }
+  input:focus, textarea:focus, select:focus{ outline: 2px solid var(--accent-deep); outline-offset: 1px; background:#fff; }
+  textarea{ resize: vertical; min-height: 76px; line-height:1.5; }
+  .field{ margin-bottom: 2px; }
+  .inline-sub{ margin-top:8px; }
+
+  /* ---------- Phrasing helper ---------- */
+  .phrase-row{ display:flex; justify-content: space-between; align-items:center; margin-bottom:6px; }
+  .ghost-btn{
+    font-family:'Inter'; font-size:0.75rem; font-weight:600; color: var(--accent-deep);
+    background: var(--accent-tint); border: 1px solid var(--accent); border-radius: 20px;
+    padding: 5px 12px; cursor:pointer;
+  }
+  .ghost-btn:hover{ background: var(--accent); color:#fff; }
+  .phrase-preview{ font-size: 0.78rem; color: var(--ink-soft); font-style: italic; margin: -2px 0 8px; min-height: 1.1em; }
+
+  /* ---------- Radio pill group (warrant approver) ---------- */
+  .pillgroup{ display:flex; gap:8px; margin-bottom: 14px; }
+  .pill{ font-size:0.8rem; font-weight:600; padding:7px 14px; border-radius:20px; border: 1px solid var(--line); background: var(--paper); cursor:pointer; color: var(--ink-soft); }
+  .pill.active{ background: var(--accent); border-color: var(--accent-deep); color:#fff; }
+  .approver-block{ display:none; }
+  .approver-block.active{ display:grid; }
+
+  /* ---------- Signature ---------- */
+  .sig-wrap{ display:flex; gap:18px; flex-wrap:wrap; align-items:flex-start; }
+  canvas.sigpad{ border: 1px dashed var(--line); border-radius: 6px; background: #fff; touch-action: none; cursor: crosshair; }
+  .sig-actions{ display:flex; flex-direction:column; gap:8px; max-width:220px; }
+  .sig-caption{ font-size:0.72rem; color:var(--ink-soft); margin-top:4px; }
+  .upload-btn{
+    display:inline-block; text-align:center; font-family:'Inter'; font-weight:600; font-size:0.78rem;
+    padding: 8px 14px; border-radius:5px; border: 1.5px solid var(--ink); background:#fff; color:var(--ink); cursor:pointer;
+  }
+  .sig-status{ font-size:0.72rem; color: var(--accent-deep); min-height:1.1em; }
+
+  /* ---------- Action bar ---------- */
+  .actions{ display:flex; flex-wrap:wrap; gap:10px; padding: 18px 26px 4px; }
+  .btn{ font-family:'Inter'; font-weight:600; font-size:0.85rem; padding: 11px 20px; border-radius: 5px; border: 1.5px solid var(--ink); background: var(--ink); color:#fff; cursor:pointer; }
+  .btn.secondary{ background: #fff; color: var(--ink); }
+  .btn:active{ transform: translateY(1px); }
+
+  /* ---------- Output ---------- */
+  .output-wrap{ padding: 8px 26px 24px; }
+  pre#outputBox{
+    font-family:'JetBrains Mono', monospace; font-size: 0.82rem; line-height:1.6;
+    white-space: pre-wrap; word-break: break-word; background: var(--ink); color: #F3EFE9;
+    padding: 20px; border-radius: 6px; min-height: 60px;
+  }
+  .copy-note{ font-size:0.75rem; color: var(--ink-soft); margin-top:6px; min-height: 1em; }
+
+  .report-panel{ display:none; }
+  .report-panel.active{ display:block; }
+
+  footer{ max-width:900px; margin: 26px auto 0; font-size:0.72rem; color: var(--ink-soft); text-align:center; }
+
+  @media print{
+    body *{ visibility:hidden; }
+    #printArea, #printArea *{ visibility:visible; }
+    #printArea{ position:absolute; top:0; left:0; width:100%; }
+  }
+  #printArea{ display:none; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand">
+      <h1>Case File Generator</h1>
+      <p>Arrest &middot; Hostage &middot; Warrant &middot; State Impound reports</p>
+    </div>
+    <div>
+      <div class="officer-switch">
+        <button class="officer-tab fiona active" data-officer="fiona"><span class="dot"></span>Fiona Snow</button>
+        <button class="officer-tab mark" data-officer="mark"><span class="dot"></span>Mark Snow</button>
+      </div>
+      <div class="badge-field">Badge # <input type="text" id="badgeNumber" placeholder="e.g. 187"></div>
+    </div>
+  </div>
+
+  <div class="style-panel">
+    <div class="style-panel-head"><span>Divider style</span></div>
+    <div class="preset-row" id="presetRow"></div>
+    <div class="custom-grid">
+      <div><label>Banner corner</label><select id="bannerCorner"></select></div>
+      <div><label>Banner line</label><select id="bannerLine"></select></div>
+      <div><label>Section corner</label><select id="sectionCorner"></select></div>
+      <div><label>Section line</label><select id="sectionLine"></select></div>
+      <div><label>Line length</label><input type="number" id="dividerLength" min="1" max="20" value="8"></div>
+    </div>
+    <div class="style-preview" id="stylePreview"></div>
+  </div>
+
+  <div class="report-tabs">
+    <button class="report-tab active" data-report="arrest">Arrest</button>
+    <button class="report-tab" data-report="hostage">Hostage</button>
+    <button class="report-tab" data-report="traffic">Traffic Ticket</button>
+    <button class="report-tab" data-report="warrant">Warrant</button>
+    <button class="report-tab" data-report="impound">Impound</button>
+    <button class="report-tab" data-report="vincrush">VIN Crush</button>
+  </div>
+
+  <div class="card" id="card">
+
+    <!-- ================= ARREST ================= -->
+    <div class="report-panel active" data-panel="arrest">
+      <div class="banner" data-banner>
+        <div class="glyphline" data-glyph-top></div>
+        <h2>Arrest Report</h2>
+        <div class="sub" data-glyph-bottom></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Incident Information</span><span class="corner-glyph"></span><span class="st-line"></span></div>
+        <div class="grid">
+          <div class="field">
+            <label>Situation</label>
+            <select id="situationPreset">
+              <option value="">Quick pick&hellip;</option>
+              <option value="fleeca">Fleeca Bank Robbery</option>
+              <option value="pacific">Pacific Standard Robbery</option>
+              <option value="paleto">Paleto Bank Robbery</option>
+              <option value="banktruck">Bank/Armored Truck Robbery</option>
+              <option value="store">Store Robbery</option>
+              <option value="jewelry">Jewelry Store Robbery</option>
+              <option value="vehicletheft">Vehicle Theft</option>
+              <option value="pursuit">Vehicle Pursuit</option>
+              <option value="drugs">Drug Trafficking</option>
+              <option value="weapons">Weapons Trafficking</option>
+              <option value="assault">Assault / Altercation</option>
+              <option value="kidnap">Kidnapping</option>
+              <option value="other">Other / Custom</option>
+            </select>
+            <input type="text" class="inline-sub" data-f="arrest.situation" placeholder="e.g. Fleeca Bank Robbery">
+          </div>
+          <div class="field"><label>Suspect Acted</label>
+            <select data-f="arrest.accompany"><option>Alone</option><option>With Accomplice(s)</option><option>With Organized Crew</option></select>
+          </div>
+          <div class="field"><label>Location of Incident</label><input type="text" data-f="arrest.locIncident"></div>
+          <div class="field"><label>Location of Arrest</label><input type="text" data-f="arrest.locArrest"></div>
+          <div class="field"><label>Date of Incident</label><input type="date" data-f="arrest.date"></div>
+          <div class="field"><label>Time of Incident</label><input type="time" data-f="arrest.time"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Summary</span><span class="corner-glyph"></span><span class="st-line"></span></div>
+        <div class="phrase-row">
+          <label style="margin:0;">Statement</label>
+          <button type="button" class="ghost-btn" data-phrase="arrest">Vary opening line</button>
+        </div>
+        <div class="phrase-preview" data-phrase-preview="arrest"></div>
+        <textarea data-f="arrest.statement" rows="5" placeholder="Insert statement here..."></textarea>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Processing Information</span><span class="corner-glyph"></span><span class="st-line"></span></div>
+        <div class="grid">
+          <div class="field"><label>Medical</label>
+            <select data-f="arrest.medical"><option>Received at Pillbox</option><option>On Scene</option><option>No Medical Needed</option></select>
+          </div>
+          <div class="field"><label>Miranda Rights</label>
+            <select data-f="arrest.miranda"><option>Read &amp; Understood</option><option>Read, Not Understood</option><option>Waived</option></select>
+          </div>
+          <div class="field"><label>Legal Counsel</label>
+            <select data-f="arrest.legal"><option>Accepted</option><option>Not available</option><option>Denied</option></select>
+          </div>
+          <div class="field"><label>Food/Drink</label><select data-f="arrest.foodDrink"><option>Accepted</option><option>Denied</option></select></div>
+          <div class="field"><label>Fingerprints</label>
+            <select data-f="arrest.fingerprintsMode"><option value="Already Filed">Already Filed</option><option value="filedby">Filed by...</option></select>
+            <input type="text" class="inline-sub" style="display:none" data-f="arrest.fingerprintsBy" placeholder="Filed by (name)">
+          </div>
+          <div class="field"><label>Mugshot</label><select data-f="arrest.mugshot"><option>On File</option><option>Taken</option></select></div>
+          <div class="field"><label>DNA For Suspect Was</label><select data-f="arrest.dna"><option>Already On File</option><option>Taken</option></select></div>
+          <div class="field"><label>Suspect Tested For GSR &amp; Was</label><select data-f="arrest.gsr"><option>Positive</option><option>Negative</option></select></div>
+          <div class="field"><label>Plead</label><select data-f="arrest.plead"><option>Guilty</option><option>Not Guilty</option><option>No Contest</option></select></div>
+          <div class="field"><label>Transported to Bolingbroke by</label><select data-f="arrest.transport"><option>Local Guards</option><option>DOC</option></select></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Plea Deal / Reductions</span><span class="corner-glyph"></span><span class="st-line"></span></div>
+        <div class="grid">
+          <div class="field"><label>Lawyer</label><input type="text" data-f="arrest.lawyer"></div>
+          <div class="field"><label>SAO</label><input type="text" data-f="arrest.sao"></div>
+          <div class="field"><label>Time</label><input type="text" data-f="arrest.pleaTime"></div>
+          <div class="field"><label>Fine ($)</label><input type="text" data-f="arrest.fine"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Evidence Information</span><span class="corner-glyph"></span><span class="st-line"></span></div>
+        <label>Items Confiscated</label>
+        <textarea data-f="arrest.evidence" rows="3" placeholder="One item per line..."></textarea>
+      </div>
+    </div>
+
+    <!-- ================= HOSTAGE ================= -->
+    <div class="report-panel" data-panel="hostage">
+      <div class="banner" data-banner>
+        <div class="glyphline" data-glyph-top></div>
+        <h2>Hostage Report</h2>
+        <div class="sub" data-glyph-bottom></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Incident Information</span><span class="corner-glyph"></span><span class="st-line"></span></div>
+        <div class="grid">
+          <div class="field"><label>Location of Incident</label><input type="text" data-f="hostage.locIncident"></div>
+          <div class="field"><label>Date of Incident</label><input type="date" data-f="hostage.date"></div>
+          <div class="field"><label>Time of Incident</label><input type="time" data-f="hostage.time"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Hostage Information</span><span class="corner-glyph"></span><span class="st-line"></span></div>
+        <div class="grid">
+          <div class="field"><label>Taken From?</label><input type="text" data-f="hostage.takenFrom" placeholder="Location"></div>
+          <div class="field"><label>Injured?</label><select data-f="hostage.injured"><option>No</option><option>Yes</option></select></div>
+          <div class="field"><label>Food and Water?</label><select data-f="hostage.foodWater"><option>Yes</option><option>No</option><option>Given by Hostage Takers</option></select></div>
+          <div class="field"><label>Stolen Items?</label><select data-f="hostage.stolen"><option>No</option><option>Yes</option></select></div>
+          <div class="field"><label>Planted Items?</label><select data-f="hostage.planted"><option>No</option><option>Yes</option></select></div>
+          <div class="field"><label>Given Ride?</label><select data-f="hostage.ride"><option>No</option><option>Yes</option></select></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Summary</span><span class="corner-glyph"></span><span class="st-line"></span></div>
+        <div class="phrase-row">
+          <label style="margin:0;">Statement</label>
+          <button type="button" class="ghost-btn" data-phrase="hostage">Vary opening line</button>
+        </div>
+        <div class="phrase-preview" data-phrase-preview="hostage"></div>
+        <textarea data-f="hostage.statement" rows="5" placeholder="Insert statement here..."></textarea>
+      </div>
+    </div>
+
+    <!-- ================= TRAFFIC TICKET ================= -->
+    <div class="report-panel" data-panel="traffic">
+      <div class="banner" data-banner>
+        <div class="glyphline" data-glyph-top></div>
+        <h2>Traffic Ticket Report</h2>
+        <div class="sub" data-glyph-bottom></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Incident Information</span><span class="corner-glyph"></span><span class="st-line"></span></div>
+        <div class="grid">
+          <div class="field"><label>Location of Incident</label><input type="text" data-f="traffic.locIncident"></div>
+          <div class="field"><label>Date of Incident</label><input type="date" data-f="traffic.date"></div>
+          <div class="field"><label>Time of Incident</label><input type="time" data-f="traffic.time"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Statement</span><span class="corner-glyph"></span><span class="st-line"></span></div>
+        <div class="phrase-row">
+          <label style="margin:0;">Statement</label>
+          <button type="button" class="ghost-btn" data-phrase="traffic">Vary opening line</button>
+        </div>
+        <div class="phrase-preview" data-phrase-preview="traffic"></div>
+        <textarea data-f="traffic.statement" rows="4" placeholder="While on patrol I..."></textarea>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Vehicle &amp; Ticket</span><span class="corner-glyph"></span><span class="st-line"></span></div>
+        <div class="grid">
+          <div class="field"><label>Make/Model or Type</label><input type="text" data-f="traffic.makeModel"></div>
+          <div class="field"><label>Colour</label><input type="text" data-f="traffic.colour"></div>
+          <div class="field"><label>Plate</label><input type="text" data-f="traffic.plate"></div>
+          <div class="field"><label>R/O</label><input type="text" data-f="traffic.ro" placeholder="N/A"></div>
+          <div class="field"><label>Posted Speed Limit</label>
+            <select data-f="traffic.speedLimit">
+              <option>25mph</option><option>35mph</option><option>45mph</option>
+              <option selected>50mph</option><option>55mph</option><option>65mph</option>
+              <option>70mph</option><option>80mph</option>
+            </select>
+          </div>
+          <div class="field"><label>Speed Clocked</label><input type="text" data-f="traffic.speedClocked" placeholder="e.g. 92"></div>
+          <div class="field"><label>Clocked With</label>
+            <select data-f="traffic.clockedWith"><option>Cruiser ALPR</option><option>Radar Gun</option></select>
+          </div>
+          <div class="field"><label>Driver Information</label><input type="text" data-f="traffic.driverInfo" placeholder="Name - CID"></div>
+        </div>
+        <div class="field" style="margin-top:12px;">
+          <label>Citation/Charge</label>
+          <textarea data-f="traffic.citation" rows="2" placeholder="One charge per line..."></textarea>
+        </div>
+        <div class="grid" style="margin-top:12px;">
+          <div class="field"><label>Fine ($)</label><input type="text" data-f="traffic.fine"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= WARRANT ================= -->
+    <div class="report-panel" data-panel="warrant">
+      <div class="banner" data-banner>
+        <div class="glyphline" data-glyph-top></div>
+        <h2>Warrant Report</h2>
+        <div class="sub" data-glyph-bottom></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Warrant Approval</span><span class="corner-glyph"></span><span class="st-line"></span></div>
+        <div class="pillgroup">
+          <button type="button" class="pill active" data-approver="sasp">SASP Supervisor</button>
+          <button type="button" class="pill" data-approver="sao">SAO</button>
+        </div>
+        <div class="approver-block grid active" data-approver-block="sasp">
+          <div class="field"><label>SASP Supervisor Full Name</label><input type="text" data-f="warrant.saspName"></div>
+          <div class="field"><label>SASP Supervisor Badge Number</label><input type="text" data-f="warrant.saspBadge"></div>
+          <div class="field"><label>SASP Supervisor Signature</label><input type="text" data-f="warrant.saspSig" placeholder="Typed name stands as signature"></div>
+          <div class="field"><label>Time &amp; Date Signed</label><input type="text" data-f="warrant.saspTime"></div>
+        </div>
+        <div class="approver-block grid" data-approver-block="sao">
+          <div class="field"><label>SAO Full Name</label><input type="text" data-f="warrant.saoName"></div>
+          <div class="field"><label>SAO Signature</label><input type="text" data-f="warrant.saoSig"></div>
+          <div class="field"><label>Time &amp; Date Signed</label><input type="text" data-f="warrant.saoTime"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Incident Information</span><span class="corner-glyph"></span><span class="st-line"></span></div>
+        <div class="grid">
+          <div class="field"><label>Location of Incident</label><input type="text" data-f="warrant.locIncident"></div>
+          <div class="field"><label>Location of Arrest</label><input type="text" data-f="warrant.locArrest"></div>
+          <div class="field"><label>Date of Incident</label><input type="date" data-f="warrant.date"></div>
+          <div class="field"><label>Time of Incident</label><input type="time" data-f="warrant.time"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Summary</span><span class="corner-glyph"></span><span class="st-line"></span></div>
+        <div class="phrase-row">
+          <label style="margin:0;">Statement</label>
+          <button type="button" class="ghost-btn" data-phrase="warrant">Vary opening line</button>
+        </div>
+        <div class="phrase-preview" data-phrase-preview="warrant"></div>
+        <textarea data-f="warrant.statement" rows="5" placeholder="Insert statement here..."></textarea>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Charge List</span><span class="corner-glyph"></span><span class="st-line"></span></div>
+        <textarea data-f="warrant.charges" rows="3" placeholder="One charge per line..."></textarea>
+      </div>
+    </div>
+
+    <!-- ================= IMPOUND ================= -->
+    <div class="report-panel" data-panel="impound">
+      <div class="banner" data-banner>
+        <div class="glyphline" data-glyph-top></div>
+        <h2>State Impound</h2>
+        <div class="sub" data-glyph-bottom></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Incident Information</span><span class="corner-glyph"></span><span class="st-line"></span></div>
+        <div class="grid">
+          <div class="field"><label>Location of Incident</label><input type="text" data-f="impound.locIncident"></div>
+          <div class="field"><label>Original Scenario</label><input type="text" data-f="impound.scenario"></div>
+          <div class="field"><label>Date of Incident</label><input type="date" data-f="impound.date"></div>
+          <div class="field"><label>Time of Incident</label><input type="time" data-f="impound.time"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Summary</span><span class="corner-glyph"></span><span class="st-line"></span></div>
+        <div class="phrase-row">
+          <label style="margin:0;">Summary</label>
+          <button type="button" class="ghost-btn" data-phrase="impound">Vary opening line</button>
+        </div>
+        <div class="phrase-preview" data-phrase-preview="impound"></div>
+        <textarea data-f="impound.statement" rows="4" placeholder="Summary..."></textarea>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Vehicle Information</span><span class="corner-glyph"></span><span class="st-line"></span></div>
+        <div class="grid">
+          <div class="field"><label>Model</label><input type="text" data-f="impound.model"></div>
+          <div class="field"><label>Plate</label><input type="text" data-f="impound.plate"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= VIN CRUSH ================= -->
+    <div class="report-panel" data-panel="vincrush">
+      <div class="banner" data-banner>
+        <div class="glyphline" data-glyph-top></div>
+        <h2>VIN Crush Report</h2>
+        <div class="sub" data-glyph-bottom></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Date &amp; Time</span><span class="corner-glyph"></span><span class="st-line"></span></div>
+        <div class="grid">
+          <div class="field"><label>Date</label><input type="date" data-f="vincrush.date"></div>
+          <div class="field"><label>Time</label><input type="time" data-f="vincrush.time"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Vehicle Information</span><span class="corner-glyph"></span><span class="st-line"></span></div>
+        <div class="grid">
+          <div class="field"><label>Make/Model</label><input type="text" data-f="vincrush.makeModel"></div>
+          <div class="field"><label>Color</label><input type="text" data-f="vincrush.color"></div>
+          <div class="field"><label>License Plate</label><input type="text" data-f="vincrush.plate"></div>
+          <div class="field"><label>Registered Owner</label><input type="text" data-f="vincrush.owner" placeholder="N/A"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Crush Authorization</span><span class="corner-glyph"></span><span class="st-line"></span></div>
+        <div class="grid">
+          <div class="field"><label>Reason for Crush</label><input type="text" data-f="vincrush.reason"></div>
+          <div class="field"><label>Date of Authorization</label><input type="date" data-f="vincrush.authDate"></div>
+        </div>
+        <div class="field" style="margin-top:12px;">
+          <label>Authorized By (one per line — badge &amp; name)</label>
+          <textarea data-f="vincrush.authBy" rows="3" placeholder="799 Gabriel Reyka&#10;222 Sophie Hawthorne&#10;104 Tim Spades"></textarea>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Crush Procedure</span><span class="corner-glyph"></span><span class="st-line"></span></div>
+        <div class="grid">
+          <div class="field"><label>Location</label><input type="text" data-f="vincrush.location"></div>
+          <div class="field"><label>Personnel</label><input type="text" data-f="vincrush.personnel"></div>
+          <div class="field"><label>Crush Date</label><input type="date" data-f="vincrush.crushDate"></div>
+        </div>
+        <div class="field" style="margin-top:12px;">
+          <label>Crush Outcome</label>
+          <textarea data-f="vincrush.outcome" rows="2" placeholder="Vehicle was taken to the crush spot and was crushed."></textarea>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Summary</span><span class="corner-glyph"></span><span class="st-line"></span></div>
+        <div class="phrase-row">
+          <label style="margin:0;">Summary</label>
+          <button type="button" class="ghost-btn" data-phrase="vincrush">Vary opening line</button>
+        </div>
+        <div class="phrase-preview" data-phrase-preview="vincrush"></div>
+        <textarea data-f="vincrush.statement" rows="5" placeholder="Insert summary here..."></textarea>
+      </div>
+    </div>
+
+    <!-- ================= SIGNATURE (shared) ================= -->
+    <div class="section">
+      <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Signature</span><span class="corner-glyph"></span><span class="st-line"></span></div>
+      <div class="sig-wrap">
+        <div>
+          <canvas class="sigpad" id="sigpad" width="320" height="110"></canvas>
+          <div class="sig-caption">Draw with mouse/finger, or upload an image. Saved on this device automatically.</div>
+        </div>
+        <div class="sig-actions">
+          <label class="upload-btn" for="sigUpload">Upload signature image</label>
+          <input type="file" id="sigUpload" accept="image/*" style="display:none">
+          <button type="button" class="btn secondary" id="clearSig">Clear signature</button>
+          <div class="sig-status" id="sigStatus"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn" id="generateBtn">Generate report</button>
+      <button class="btn secondary" id="copyBtn">Copy text</button>
+      <button class="btn secondary" id="downloadBtn">Download .txt</button>
+      <button class="btn secondary" id="printBtn">Print / Save PDF</button>
+    </div>
+
+    <div class="output-wrap">
+      <pre id="outputBox">Fill in the fields above, then click &ldquo;Generate report&rdquo;.</pre>
+      <div class="copy-note" id="copyNote"></div>
+    </div>
+
+  </div>
+</div>
+
+<footer>Officer, badge number, divider style, and signature are all remembered on this device unless you clear your browser cache.</footer>
+
+<div id="printArea"></div>
+
+<script>
+(function(){
+
+  /* ---------------- storage (falls back to memory if unavailable) ---------------- */
+  var memStore = {};
+  var storage = {
+    get: function(k){
+      try { var v = window.localStorage.getItem(k); return v === null ? undefined : v; }
+      catch(e){ return memStore[k]; }
+    },
+    set: function(k, v){
+      try { window.localStorage.setItem(k, v); return true; }
+      catch(e){ memStore[k] = v; return false; }
+    },
+    remove: function(k){
+      try { window.localStorage.removeItem(k); } catch(e){}
+      delete memStore[k];
+    }
+  };
+
+  /* ---------------- officer state ---------------- */
+  var officers = { fiona: { name: 'Fiona Snow' }, mark: { name: 'Mark Snow' } };
+  var currentOfficer = storage.get('officer') || 'fiona';
+
+  function applyOfficerTheme(key){
+    var root = document.documentElement.style;
+    if(key === 'mark'){
+      root.setProperty('--accent', 'var(--mark-a)');
+      root.setProperty('--accent-deep', 'var(--mark-b)');
+      root.setProperty('--accent-tint', 'var(--mark-tint)');
+      root.setProperty('--accent-ink', 'var(--mark-ink)');
+    } else {
+      root.setProperty('--accent', 'var(--fiona-a)');
+      root.setProperty('--accent-deep', 'var(--fiona-b)');
+      root.setProperty('--accent-tint', 'var(--fiona-tint)');
+      root.setProperty('--accent-ink', 'var(--fiona-ink)');
+    }
+    document.querySelectorAll('.officer-tab').forEach(function(btn){
+      btn.classList.toggle('active', btn.dataset.officer === key);
+    });
+  }
+  function setOfficer(key){ currentOfficer = key; storage.set('officer', key); applyOfficerTheme(key); }
+  document.querySelectorAll('.officer-tab').forEach(function(btn){
+    btn.addEventListener('click', function(){ setOfficer(btn.dataset.officer); });
+  });
+  applyOfficerTheme(currentOfficer);
+
+  /* ---------------- badge number ---------------- */
+  var badgeInput = document.getElementById('badgeNumber');
+  badgeInput.value = storage.get('badgeNumber') || '';
+  badgeInput.addEventListener('input', function(){ storage.set('badgeNumber', badgeInput.value); });
+
+  /* ---------------- divider style settings ---------------- */
+  var CORNERS = ['✦','◆','★','☆','❖','▸','➤','§','♛','☙','❧','♱','⚖','✿','❀','⚔','┊','⫽','〢','▪',''];
+  var LINES = ['─','═','-','=','┈','┄','•','~','▓','░','▬','·','・','∙','⋆'];
+  var CORNER_LABELS = { '': '(none)' };
+
+  var PRESETS = [
+    { key:'classic', name:'Case File',      bc:'✦', bl:'═', sc:'◆', sl:'─', len:5 },
+    { key:'dash',    name:'Dash Report',    bc:'✦', bl:'┈', sc:'◆', sl:'┄', len:8 },
+    { key:'justice', name:'Scales of Justice', bc:'⚖', bl:'─', sc:'⚖', sl:'┈', len:6 },
+    { key:'badge',   name:'Badge & Star',   bc:'★', bl:'─', sc:'☆', sl:'┈', len:6 },
+    { key:'tactical',name:'Tactical',       bc:'▸', bl:'▬', sc:'➤', sl:'─', len:6 },
+    { key:'gothic',  name:'Gothic Dossier', bc:'♱', bl:'═', sc:'❧', sl:'─', len:5 },
+    { key:'bloom',   name:'Soft Bloom',     bc:'❀', bl:'⋆', sc:'✿', sl:'⋆', len:5 },
+    { key:'royal',   name:'Royal Seal',     bc:'♛', bl:'═', sc:'☙', sl:'─', len:5 },
+    { key:'discord', name:'Minimal Tick',   bc:'┊', bl:'・', sc:'┊', sl:'・', len:6 },
+    { key:'plain',   name:'No Corners',     bc:'',  bl:'─', sc:'',  sl:'┈', len:10 }
+  ];
+  var DEFAULT_STYLE = PRESETS[1]; // Dash Report
+
+  function loadStyle(){
+    var raw = storage.get('dividerStyle');
+    if(!raw) return { bc: DEFAULT_STYLE.bc, bl: DEFAULT_STYLE.bl, sc: DEFAULT_STYLE.sc, sl: DEFAULT_STYLE.sl, len: DEFAULT_STYLE.len };
+    try { return JSON.parse(raw); } catch(e){ return { bc: DEFAULT_STYLE.bc, bl: DEFAULT_STYLE.bl, sc: DEFAULT_STYLE.sc, sl: DEFAULT_STYLE.sl, len: DEFAULT_STYLE.len }; }
+  }
+  var style = loadStyle();
+  function saveStyle(){ storage.set('dividerStyle', JSON.stringify(style)); }
+
+  function fillSelect(sel, options, current){
+    sel.innerHTML = '';
+    options.forEach(function(o){
+      var opt = document.createElement('option');
+      opt.value = o;
+      opt.textContent = CORNER_LABELS[o] !== undefined ? CORNER_LABELS[o] : o;
+      if(o === current) opt.selected = true;
+      sel.appendChild(opt);
+    });
+  }
+
+  var bcSel = document.getElementById('bannerCorner');
+  var blSel = document.getElementById('bannerLine');
+  var scSel = document.getElementById('sectionCorner');
+  var slSel = document.getElementById('sectionLine');
+  var lenInput = document.getElementById('dividerLength');
+  var presetRow = document.getElementById('presetRow');
+
+  PRESETS.forEach(function(p){
+    var chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'preset-chip';
+    chip.dataset.preset = p.key;
+    chip.innerHTML = '<b>' + p.name + '</b>' + (p.bc || '·') + p.bl + p.bl + (p.bc || '·');
+    chip.addEventListener('click', function(){
+      style = { bc: p.bc, bl: p.bl, sc: p.sc, sl: p.sl, len: p.len };
+      refreshStyleUI();
+      saveStyle();
+    });
+    presetRow.appendChild(chip);
+  });
+
+  function makeLine(corner, ch, len){
+    var body = (ch || '-').repeat(Math.max(1, len || 1));
+    return corner ? (corner + ' ' + body + ' ' + corner) : body;
+  }
+  function headerLine(corner, ch, len, title){
+    var l = makeLine(corner, ch, len);
+    return l + ' ' + title + ' ' + l;
+  }
+
+  function highlightMatchingPreset(){
+    var match = PRESETS.find(function(p){
+      return p.bc === style.bc && p.bl === style.bl && p.sc === style.sc && p.sl === style.sl && p.len === style.len;
+    });
+    presetRow.querySelectorAll('.preset-chip').forEach(function(chip){
+      chip.classList.toggle('active', match && chip.dataset.preset === match.key);
+    });
+  }
+
+  function refreshStyleUI(){
+    fillSelect(bcSel, CORNERS, style.bc);
+    fillSelect(blSel, LINES, style.bl);
+    fillSelect(scSel, CORNERS, style.sc);
+    fillSelect(slSel, LINES, style.sl);
+    lenInput.value = style.len;
+    highlightMatchingPreset();
+
+    // live preview
+    document.getElementById('stylePreview').innerHTML =
+      '<div class="lead">' + headerLine(style.bc, style.bl, style.len, 'Arrest Report') + '</div>' +
+      '<div>' + headerLine(style.sc, style.sl, style.len, 'Incident Information') + '</div>';
+
+    // update on-screen banner glyphs
+    document.querySelectorAll('[data-glyph-top]').forEach(function(el){ el.textContent = makeLine(style.bc, style.bl, style.len); });
+    document.querySelectorAll('[data-glyph-bottom]').forEach(function(el){ el.textContent = makeLine(style.bc, style.bl, style.len); });
+    // update section title glyphs
+    document.querySelectorAll('.corner-glyph').forEach(function(el){ el.textContent = style.sc; });
+  }
+
+  [bcSel, blSel, scSel, slSel].forEach(function(sel){
+    sel.addEventListener('change', function(){
+      style.bc = bcSel.value; style.bl = blSel.value; style.sc = scSel.value; style.sl = slSel.value;
+      refreshStyleUI(); saveStyle();
+    });
+  });
+  lenInput.addEventListener('input', function(){
+    style.len = Math.max(1, parseInt(lenInput.value, 10) || 1);
+    refreshStyleUI(); saveStyle();
+  });
+
+  refreshStyleUI();
+
+  /* ---------------- report tab switching ---------------- */
+  var currentReport = 'arrest';
+  document.querySelectorAll('.report-tab').forEach(function(tab){
+    tab.addEventListener('click', function(){
+      currentReport = tab.dataset.report;
+      document.querySelectorAll('.report-tab').forEach(function(t){ t.classList.toggle('active', t === tab); });
+      document.querySelectorAll('.report-panel').forEach(function(p){ p.classList.toggle('active', p.dataset.panel === currentReport); });
+    });
+  });
+
+  /* ---------------- fingerprints conditional field ---------------- */
+  var fpSelect = document.querySelector('[data-f="arrest.fingerprintsMode"]');
+  var fpSub = document.querySelector('[data-f="arrest.fingerprintsBy"]');
+  fpSelect.addEventListener('change', function(){ fpSub.style.display = fpSelect.value === 'filedby' ? 'block' : 'none'; });
+
+  /* ---------------- warrant approver toggle ---------------- */
+  document.querySelectorAll('[data-approver]').forEach(function(pill){
+    pill.addEventListener('click', function(){
+      var which = pill.dataset.approver;
+      document.querySelectorAll('[data-approver]').forEach(function(p){ p.classList.toggle('active', p === pill); });
+      document.querySelectorAll('[data-approver-block]').forEach(function(b){ b.classList.toggle('active', b.dataset.approverBlock === which); });
+    });
+  });
+
+  /* ---------------- field value helper ---------------- */
+  function val(sel){ var el = document.querySelector('[data-f="' + sel + '"]'); return el ? el.value.trim() : ''; }
+  function fmtDate(reportKey){
+    var d = val(reportKey + '.date');
+    var t = val(reportKey + '.time');
+    if(!d && !t) return 'XX/XX/2026';
+    var dateStr = 'XX/XX/2026';
+    if(d){ var parts = d.split('-'); dateStr = parts[1] + '/' + parts[2] + '/' + parts[0]; }
+    return t ? (dateStr + ' @ ' + t) : dateStr;
+  }
+  function officerLine(){
+    var badge = badgeInput.value.trim();
+    var name = officers[currentOfficer].name;
+    return (badge ? badge + ' ' : '') + name;
+  }
+  function dash(v){ return v && v.length ? v : 'XXX'; }
+  function linesFrom(text){ return (text || '').split('\n').map(function(l){ return l.trim(); }).filter(Boolean); }
+  function to12Hour(t){
+    if(!t) return '';
+    var parts = t.split(':');
+    var h = parseInt(parts[0], 10);
+    var ampm = h >= 12 ? 'PM' : 'AM';
+    var h12 = h % 12; if(h12 === 0) h12 = 12;
+    return h12 + ':' + parts[1] + ampm;
+  }
+  function fmtDateOnly(v){
+    if(!v) return 'XX/XX/2026';
+    var parts = v.split('-');
+    return parts[1] + '/' + parts[2] + '/' + parts[0];
+  }
+  function fmtDateTilde(reportKey){
+    var d = val(reportKey + '.date');
+    var t = val(reportKey + '.time');
+    var dateStr = d ? fmtDateOnly(d) : 'XX/XX/2026';
+    var timeStr = t ? (t.replace(':', '') + 'h EST') : 'XXXXh EST';
+    return dateStr + ' ~ ' + timeStr;
+  }
+
+  /* ---------------- situation quick-pick (arrest only) ---------------- */
+  var situationLabels = {
+    fleeca: 'Fleeca Bank Robbery', pacific: 'Pacific Standard Robbery', paleto: 'Paleto Bank Robbery',
+    banktruck: 'Bank/Armored Truck Robbery', store: 'Store Robbery', jewelry: 'Jewelry Store Robbery',
+    vehicletheft: 'Vehicle Theft', pursuit: 'Vehicle Pursuit', drugs: 'Drug Trafficking',
+    weapons: 'Weapons Trafficking', assault: 'Assault / Altercation', kidnap: 'Kidnapping', other: ''
+  };
+  // maps a quick-pick key to which phrasing category it should draw from
+  var situationCategory = {
+    fleeca: 'bank', pacific: 'bank', paleto: 'bank',
+    banktruck: 'banktruck', store: 'store', jewelry: 'store',
+    vehicletheft: 'vehicle', pursuit: 'vehicle',
+    drugs: 'trafficking', weapons: 'trafficking',
+    assault: 'assault', kidnap: 'kidnap', other: 'generic'
+  };
+  var arrestSituationKey = ''; // last chosen quick-pick key, if any
+
+  var situationSelect = document.getElementById('situationPreset');
+  var situationInput = document.querySelector('[data-f="arrest.situation"]');
+  situationSelect.addEventListener('change', function(){
+    arrestSituationKey = situationSelect.value;
+    if(arrestSituationKey && arrestSituationKey !== 'other'){
+      situationInput.value = situationLabels[arrestSituationKey];
+    }
+    situationInput.focus();
+  });
+
+  /* ---------------- phrasing helper bank ---------------- */
+  var phraseBank = {
+    arrest: {
+      generic: [
+        "Upon arriving at the location, I observed the individual, {accomplice}, matching the description provided by dispatch.",
+        "While on routine patrol, my attention was drawn to activity that warranted further investigation.",
+        "I responded to the scene following a call regarding a disturbance, where I made contact with the suspect, {accomplice}.",
+        "After receiving information linking the individual to the incident, I approached and initiated contact.",
+        "During the course of my patrol, I encountered a situation requiring immediate intervention.",
+        "Acting on a tip relayed through dispatch, I located the individual, {accomplice}, near the reported area."
+      ],
+      bank: [
+        "I responded to reports of an active {situation}, where I identified the suspect, {accomplice}, attempting to flee the premises.",
+        "Dispatch advised of an alarm triggered during a {situation}; upon arrival I located the suspect, {accomplice}, near the scene.",
+        "While responding to a {situation} in progress, I intercepted the suspect, {accomplice}, before they could leave the area.",
+        "Upon arrival at the reported {situation}, I observed the suspect, {accomplice}, matching the description relayed by dispatch."
+      ],
+      banktruck: [
+        "I was dispatched to an in-progress robbery of an armored transport vehicle, where the suspect, {accomplice}, was attempting to breach the vault compartment.",
+        "Upon arrival at the scene of the reported truck robbery, I observed the suspect, {accomplice}, fleeing with the stolen cargo.",
+        "Responding to reports of a targeted armored vehicle robbery, I made contact with the suspect, {accomplice}, a short distance from the scene."
+      ],
+      store: [
+        "I responded to a robbery call at the location noted above, where the suspect, {accomplice}, was described as fleeing with stolen merchandise.",
+        "Upon arrival at the scene of the reported robbery, I located the suspect, {accomplice}, matching the description given by witnesses.",
+        "Dispatch relayed a robbery in progress at the location above; I intercepted the suspect, {accomplice}, shortly after the call came in."
+      ],
+      vehicle: [
+        "I responded to a report involving the vehicle described above and located the suspect, {accomplice}, in the immediate area.",
+        "While on patrol, I observed the suspect, {accomplice}, operating a vehicle matching the description provided by dispatch.",
+        "Following a pursuit initiated after the vehicle failed to yield, I was able to detain the suspect, {accomplice}, once it came to a stop."
+      ],
+      trafficking: [
+        "Acting on information regarding suspected trafficking activity, I made contact with the suspect, {accomplice}, at the location above.",
+        "During the course of an investigation into trafficking in the area, I identified the suspect, {accomplice}, and initiated contact.",
+        "I responded to reports of suspicious activity consistent with trafficking, where I located the suspect, {accomplice}."
+      ],
+      assault: [
+        "I responded to a call regarding an altercation at the location above, where I identified the suspect, {accomplice}, involved in the incident.",
+        "Upon arrival, witnesses directed me to the suspect, {accomplice}, who was reported to have been involved in the altercation.",
+        "I made contact with the suspect, {accomplice}, after responding to reports of an assault at the scene."
+      ],
+      kidnap: [
+        "I responded to reports of an individual being held against their will, where I identified the suspect, {accomplice}, at the scene.",
+        "Upon locating the victim, I was able to identify the suspect, {accomplice}, responsible for the abduction.",
+        "Acting on information provided by witnesses, I located the suspect, {accomplice}, connected to the reported kidnapping."
+      ]
+    },
+    vincrush: [
+      "While handling an unrelated call, I came across a vehicle nearby that raised suspicion upon closer inspection.",
+      "During a routine check of the area, I identified a vehicle whose VIN appeared altered or unreadable.",
+      "I was flagged down regarding a vehicle left unattended, and upon inspection found irregularities with the VIN.",
+      "While on scene for another matter, I noticed a vehicle parked nearby and decided to run its information."
+    ],
+    traffic: [
+      "While on patrol I observed a vehicle traveling well above the posted speed limit.",
+      "While stationary and monitoring traffic, I clocked a vehicle exceeding the posted limit.",
+      "While on patrol I observed a vehicle commit a traffic violation and initiated a stop.",
+      "While running radar along my patrol route, I identified a vehicle traveling in excess of the posted limit."
+    ],
+    hostage: [
+      "Upon arrival, I was informed by responding units that a hostage situation was in progress.",
+      "I was dispatched to the scene following reports of an individual being held against their will.",
+      "After establishing contact with those involved, I began assessing the condition of the hostage.",
+      "Once the scene was secured, I proceeded to interview the individual who had been held.",
+      "Responding to an active call, I coordinated with on-scene units before making contact with the hostage."
+    ],
+    warrant: [
+      "Based on evidence gathered during the course of this investigation, I sought approval for a warrant.",
+      "Following a review of available intelligence, sufficient grounds were established to request a warrant.",
+      "After consulting with my supervisor regarding the circumstances of this case, a warrant was pursued.",
+      "Given the nature of the alleged offense and the evidence on hand, I moved to secure a warrant.",
+      "Upon compiling witness statements and physical evidence, I determined a warrant was warranted."
+    ],
+    impound: [
+      "The vehicle in question was located at the scene and held in connection with the incident described above.",
+      "Following the conclusion of the incident, the vehicle was flagged for state impound.",
+      "Due to its involvement in the reported scenario, the vehicle was secured and impounded.",
+      "The vehicle was recovered at the location noted above and processed for impound accordingly."
+    ]
+  };
+  var phraseIndex = { hostage:0, warrant:0, impound:0, vincrush:0, traffic:0 };
+  var arrestPhraseIndex = {}; // keyed by category, so switching situations doesn't repeat the same line
+
+  function accompanyPhrase(){
+    var v = val('arrest.accompany');
+    if(v === 'With Accomplice(s)') return 'in coordination with an accomplice';
+    if(v === 'With Organized Crew') return 'as part of an organized crew';
+    return 'acting alone';
+  }
+
+  document.querySelectorAll('[data-phrase]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var key = btn.dataset.phrase;
+      var line;
+
+      if(key === 'arrest'){
+        var category = situationCategory[arrestSituationKey] || 'generic';
+        var bank = phraseBank.arrest[category] || phraseBank.arrest.generic;
+        var i = (arrestPhraseIndex[category] || 0) % bank.length;
+        arrestPhraseIndex[category] = i + 1;
+        var situationText = val('arrest.situation') || 'reported incident';
+        line = bank[i]
+          .replace(/\{situation\}/g, situationText)
+          .replace(/\{accomplice\}/g, accompanyPhrase());
+      } else {
+        var flatBank = phraseBank[key];
+        var idx = phraseIndex[key] % flatBank.length;
+        phraseIndex[key] = idx + 1;
+        line = flatBank[idx];
+      }
+
+      document.querySelector('[data-phrase-preview="' + key + '"]').textContent = line;
+      var textarea = document.querySelector('[data-f="' + key + '.statement"]');
+      if(textarea){
+        if(!textarea.value.trim()) textarea.value = line + ' ';
+        textarea.focus();
+      }
+    });
+  });
+
+  /* ---------------- signature pad (draw + upload + persist) ---------------- */
+  var canvas = document.getElementById('sigpad');
+  var ctx = canvas.getContext('2d');
+  ctx.lineWidth = 2;
+  ctx.lineCap = 'round';
+  ctx.strokeStyle = '#2B2A28';
+  var drawing = false, hasSignature = false;
+  var sigStatus = document.getElementById('sigStatus');
+
+  function saveSignature(){
+    try {
+      var data = canvas.toDataURL('image/png');
+      var ok = storage.set('signatureData', data);
+      sigStatus.textContent = ok ? 'Signature saved.' : 'Saved for this session only (too large to store permanently).';
+    } catch(e){
+      sigStatus.textContent = 'Could not save signature.';
+    }
+  }
+
+  function loadSignature(){
+    var data = storage.get('signatureData');
+    if(!data) return;
+    var img = new Image();
+    img.onload = function(){
+      ctx.clearRect(0,0,canvas.width, canvas.height);
+      // fit image inside canvas, preserving aspect ratio
+      var scale = Math.min(canvas.width / img.width, canvas.height / img.height);
+      var w = img.width * scale, h = img.height * scale;
+      var x = (canvas.width - w) / 2, y = (canvas.height - h) / 2;
+      ctx.drawImage(img, x, y, w, h);
+      hasSignature = true;
+    };
+    img.src = data;
+  }
+  loadSignature();
+
+  function pos(e){
+    var rect = canvas.getBoundingClientRect();
+    var x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+    var y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+    return { x: x, y: y };
+  }
+  function start(e){ drawing = true; hasSignature = true; var p = pos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); e.preventDefault(); }
+  function move(e){ if(!drawing) return; var p = pos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); e.preventDefault(); }
+  function end(){ if(drawing){ drawing = false; saveSignature(); } }
+
+  canvas.addEventListener('mousedown', start);
+  canvas.addEventListener('mousemove', move);
+  window.addEventListener('mouseup', end);
+  canvas.addEventListener('touchstart', start);
+  canvas.addEventListener('touchmove', move);
+  canvas.addEventListener('touchend', end);
+
+  document.getElementById('clearSig').addEventListener('click', function(){
+    ctx.clearRect(0,0,canvas.width, canvas.height);
+    hasSignature = false;
+    storage.remove('signatureData');
+    sigStatus.textContent = 'Signature cleared.';
+  });
+
+  document.getElementById('sigUpload').addEventListener('change', function(e){
+    var file = e.target.files && e.target.files[0];
+    if(!file) return;
+    var reader = new FileReader();
+    reader.onload = function(evt){
+      var img = new Image();
+      img.onload = function(){
+        ctx.clearRect(0,0,canvas.width, canvas.height);
+        var scale = Math.min(canvas.width / img.width, canvas.height / img.height);
+        var w = img.width * scale, h = img.height * scale;
+        var x = (canvas.width - w) / 2, y = (canvas.height - h) / 2;
+        ctx.drawImage(img, x, y, w, h);
+        hasSignature = true;
+        saveSignature();
+      };
+      img.src = evt.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  /* ---------------- template builders ---------------- */
+  function buildArrest(){
+    var o = officerLine();
+    var fp = val('arrest.fingerprintsMode') === 'filedby' ? ('Filed by ' + dash(val('arrest.fingerprintsBy'))) : 'Already Filed';
+    return [
+      headerLine(style.bc, style.bl, style.len, 'Arrest Report'),
+      headerLine(style.sc, style.sl, style.len, 'Incident Information'),
+      '',
+      '*  ARRESTING DEPUTY: ' + o,
+      '*  SITUATION: ' + dash(val('arrest.situation')),
+      '*  SUSPECT ACTED: ' + val('arrest.accompany'),
+      '*  LOCATION OF INCIDENT: ' + dash(val('arrest.locIncident')),
+      '*  LOCATION OF ARREST: ' + dash(val('arrest.locArrest')),
+      '*  DATE & TIME OF INCIDENT: ' + fmtDate('arrest'),
+      '',
+      headerLine(style.sc, style.sl, style.len, 'Summary'),
+      o + ' Statement:',
+      dash(val('arrest.statement') || '[Insert Statement Here]'),
+      headerLine(style.sc, style.sl, style.len, 'Processing Information'),
+      '',
+      '* Medical: ' + val('arrest.medical'),
+      '* Miranda Rights: ' + val('arrest.miranda'),
+      '* Legal Counsel: ' + val('arrest.legal'),
+      '* Food/Drink: ' + val('arrest.foodDrink'),
+      '* Fingerprints: ' + fp,
+      '* Mugshot: ' + val('arrest.mugshot'),
+      '* DNA For Suspect Was: ' + val('arrest.dna'),
+      '* Suspect Tested For GSR & Was: ' + val('arrest.gsr'),
+      '* Plead: ' + val('arrest.plead'),
+      '* Transported to Bolingbroke by: ' + val('arrest.transport'),
+      '',
+      headerLine(style.sc, style.sl, style.len, 'Plea Deal / Reductions'),
+      '',
+      '* LAWYER: ' + dash(val('arrest.lawyer')),
+      '* SAO: ' + dash(val('arrest.sao')),
+      '* Time: ' + dash(val('arrest.pleaTime')),
+      '* Fine: $' + (val('arrest.fine') || '0'),
+      '',
+      headerLine(style.sc, style.sl, style.len, 'Evidence Information'),
+      'Items Confiscated:',
+      linesFrom(val('arrest.evidence')).join('\n')
+    ].join('\n');
+  }
+
+  function buildHostage(){
+    var o = officerLine();
+    return [
+      headerLine(style.bc, style.bl, style.len, 'Hostage Report'),
+      headerLine(style.sc, style.sl, style.len, 'Incident Information'),
+      '',
+      '*  ARRESTING DEPUTY: ' + o,
+      '*  LOCATION OF INCIDENT: ' + dash(val('hostage.locIncident')),
+      '* DATE & TIME OF INCIDENT: ' + fmtDate('hostage'),
+      '',
+      headerLine(style.sc, style.sl, style.len, 'Hostage Information'),
+      '',
+      '* Taken From? ' + dash(val('hostage.takenFrom')),
+      '* Injured? ' + val('hostage.injured'),
+      '* Food and Water? ' + val('hostage.foodWater'),
+      '* Stolen Items? ' + val('hostage.stolen'),
+      '* Planted items? ' + val('hostage.planted'),
+      '* Given Ride? ' + val('hostage.ride'),
+      '',
+      headerLine(style.sc, style.sl, style.len, 'Summary'),
+      o + ' Statement:',
+      dash(val('hostage.statement') || '[Insert Statement Here]')
+    ].join('\n');
+  }
+
+  function buildWarrant(){
+    var o = officerLine();
+    var usesSasp = document.querySelector('[data-approver="sasp"]').classList.contains('active');
+    var approvalLines;
+    if(usesSasp){
+      approvalLines = [
+        '* SASP Supervisor Full Name: ' + dash(val('warrant.saspName')),
+        '* SASP Supervisor Badge Number: ' + dash(val('warrant.saspBadge')),
+        '* SASP Supervisor Signature: ' + dash(val('warrant.saspSig')),
+        '* Time & Date Signed: ' + dash(val('warrant.saspTime'))
+      ];
+    } else {
+      approvalLines = [
+        '* SAO Full Name: ' + dash(val('warrant.saoName')),
+        '* SAO Signature: ' + dash(val('warrant.saoSig')),
+        '* Time & Date Signed: ' + dash(val('warrant.saoTime'))
+      ];
+    }
+    return [
+      headerLine(style.bc, style.bl, style.len, 'Warrant Report'),
+      headerLine(style.sc, style.sl, style.len, 'Warrant Approval'),
+      ''
+    ].concat(approvalLines).concat([
+      '',
+      headerLine(style.sc, style.sl, style.len, 'Incident Information'),
+      '',
+      '*  ARRESTING OFFICER(S): ' + o,
+      '*  LOCATION OF INCIDENT: ' + dash(val('warrant.locIncident')),
+      '*  LOCATION OF ARREST: ' + dash(val('warrant.locArrest')),
+      '* DATE & TIME OF INCIDENT: ' + fmtDate('warrant'),
+      '',
+      headerLine(style.sc, style.sl, style.len, 'Summary'),
+      o + ' Statement:',
+      dash(val('warrant.statement') || '[Insert Statement Here]'),
+      headerLine(style.sc, style.sl, style.len, 'Charge List')
+    ]).concat(linesFrom(val('warrant.charges'))).join('\n');
+  }
+
+  function buildImpound(){
+    var o = officerLine();
+    return [
+      headerLine(style.bc, style.bl, style.len, 'STATE IMPOUND'),
+      headerLine(style.sc, style.sl, style.len, 'Incident Information'),
+      '',
+      '*  ARRESTING OFFICER(S): ' + o,
+      '*  LOCATION OF INCIDENT: ' + dash(val('impound.locIncident')),
+      '* ORIGINAL SCENARIO: ' + dash(val('impound.scenario')),
+      '* DATE & TIME OF INCIDENT: ' + fmtDate('impound'),
+      '',
+      headerLine(style.sc, style.sl, style.len, 'Summary'),
+      dash(val('impound.statement')),
+      headerLine(style.sc, style.sl, style.len, 'Vehicle Information'),
+      '',
+      '* MODEL: ' + dash(val('impound.model')),
+      '* PLATE: ' + dash(val('impound.plate'))
+    ].join('\n');
+  }
+
+  function buildVinCrush(){
+    var d = fmtDateOnly(val('vincrush.date'));
+    var t = to12Hour(val('vincrush.time'));
+    var dateTime = d + (t ? (' @ ' + t + ' EST') : '');
+    var authDate = fmtDateOnly(val('vincrush.authDate'));
+    var crushDate = fmtDateOnly(val('vincrush.crushDate'));
+    var authorizedBy = linesFrom(val('vincrush.authBy')).join(', ') || 'XXX';
+
+    return [
+      headerLine(style.bc, style.bl, style.len, 'VIN Crush Report'),
+      'DATE & TIME: ' + dateTime,
+      '',
+      'Vehicle Information',
+      '',
+      '* Make/Model: ' + dash(val('vincrush.makeModel')),
+      '* Color: ' + dash(val('vincrush.color')),
+      '* License Plate: ' + dash(val('vincrush.plate')),
+      '* Registered Owner: ' + (val('vincrush.owner') || 'N/A'),
+      '',
+      'Crush Authorization:',
+      '',
+      '* Reason for Crush: ' + dash(val('vincrush.reason')),
+      '* Date of Authorization: ' + authDate,
+      '* Authorized By: ' + authorizedBy,
+      '',
+      'Crush Procedure:',
+      'Location: ' + dash(val('vincrush.location')),
+      'Personnel: ' + dash(val('vincrush.personnel')),
+      'Crush Date: ' + crushDate,
+      'Crush Outcome: ' + dash(val('vincrush.outcome')),
+      'SUMMARY: ' + dash(val('vincrush.statement'))
+    ].join('\n');
+  }
+
+  function buildTraffic(){
+    var o = officerLine();
+    return [
+      headerLine(style.bc, style.bl, style.len, 'TRAFFIC TICKET REPORT'),
+      'Involved Officer: ' + o,
+      'Location of Incident: ' + dash(val('traffic.locIncident')),
+      'Date & Time of Incident: ' + fmtDateTilde('traffic'),
+      '',
+      headerLine(style.sc, style.sl, style.len, o + ' STATEMENT'),
+      dash(val('traffic.statement') || '[Insert Statement Here]'),
+      '',
+      headerLine(style.sc, style.sl, style.len, 'VEHICLE & TICKET'),
+      'Make/Model or Type: ' + dash(val('traffic.makeModel')),
+      'Colour: ' + dash(val('traffic.colour')),
+      'Plate: ' + dash(val('traffic.plate')),
+      'R/O: ' + (val('traffic.ro') || 'N/A'),
+      'Posted Speed Limit: ' + val('traffic.speedLimit'),
+      'Speed Clocked: ' + dash(val('traffic.speedClocked')) + ' mph',
+      'Clocked with: ' + val('traffic.clockedWith'),
+      'Driver Information: ' + dash(val('traffic.driverInfo')),
+      'Citation/Charge: ' + (linesFrom(val('traffic.citation')).join(', ') || 'XXX'),
+      'Fine: $' + (val('traffic.fine') || '0')
+    ].join('\n');
+  }
+
+  var builders = { arrest: buildArrest, hostage: buildHostage, warrant: buildWarrant, impound: buildImpound, vincrush: buildVinCrush, traffic: buildTraffic };
+  var titles = { arrest: 'Arrest Report', hostage: 'Hostage Report', warrant: 'Warrant Report', impound: 'State Impound', vincrush: 'VIN Crush Report', traffic: 'Traffic Ticket Report' };
+  var lastOutput = '';
+
+  document.getElementById('generateBtn').addEventListener('click', function(){
+    lastOutput = builders[currentReport]();
+    document.getElementById('outputBox').textContent = lastOutput;
+    document.getElementById('copyNote').textContent = '';
+  });
+
+  document.getElementById('copyBtn').addEventListener('click', function(){
+    if(!lastOutput){ lastOutput = builders[currentReport](); document.getElementById('outputBox').textContent = lastOutput; }
+    var note = document.getElementById('copyNote');
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(lastOutput).then(function(){ note.textContent = 'Copied to clipboard.'; })
+        .catch(function(){ note.textContent = 'Could not copy automatically — select the text above and copy manually.'; });
+    } else {
+      note.textContent = 'Select the text above and copy manually.';
+    }
+  });
+
+  document.getElementById('downloadBtn').addEventListener('click', function(){
+    if(!lastOutput){ lastOutput = builders[currentReport](); document.getElementById('outputBox').textContent = lastOutput; }
+    var blob = new Blob([lastOutput], { type: 'text/plain' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = titles[currentReport].replace(/\s+/g,'_') + '.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  });
+
+  document.getElementById('printBtn').addEventListener('click', function(){
+    if(!lastOutput){ lastOutput = builders[currentReport](); document.getElementById('outputBox').textContent = lastOutput; }
+    var accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+    var accentDeep = getComputedStyle(document.documentElement).getPropertyValue('--accent-deep').trim();
+    var sigData = hasSignature ? canvas.toDataURL('image/png') : '';
+    var printArea = document.getElementById('printArea');
+    printArea.innerHTML =
+      '<div style="font-family:Inter,sans-serif; max-width:700px; margin:30px auto;">' +
+        '<div style="background:linear-gradient(160deg,' + accent + ',' + accentDeep + '); color:#fff; text-align:center; padding:24px; border-radius:6px; font-family:Bitter,serif;">' +
+          '<div style="font-size:1.6rem; font-weight:700; font-style:italic;">' + titles[currentReport] + '</div>' +
+        '</div>' +
+        '<pre style="white-space:pre-wrap; font-family:JetBrains Mono, monospace; font-size:0.85rem; line-height:1.6; margin-top:20px;">' +
+          lastOutput.replace(/&/g,'&amp;').replace(/</g,'&lt;') +
+        '</pre>' +
+        (sigData ? ('<div style="margin-top:26px;"><div style="font-size:0.75rem; color:#666; margin-bottom:6px;">Signature:</div><img src="' + sigData + '" style="height:70px;"></div>') : '') +
+      '</div>';
+    window.print();
+  });
+
+})();
+</script>
+
+</body>
+</html>
