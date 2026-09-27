@@ -134,17 +134,7 @@
   }
   .style-preview .lead{ color: var(--accent-deep); font-weight:600; }
 
-  /* ---------- Report tabs (folder tabs) ---------- */
-  .report-tabs{ display:flex; gap:6px; padding-left: 4px; }
-  .report-tab{
-    font-family:'Bitter', serif; font-weight:600; font-size:0.92rem;
-    padding: 10px 20px 9px; background: var(--paper-dark); color: var(--ink-soft);
-    border: 1.5px solid var(--line); border-bottom:none; border-radius: 8px 8px 0 0;
-    cursor:pointer; transform: translateY(2px);
-  }
-  .report-tab.active{ background: #fff; color: var(--ink); border-color: var(--ink); transform: translateY(0); position:relative; z-index:2; }
-
-  .card{ background:#fff; border: 1.5px solid var(--ink); border-radius: 0 8px 8px 8px; padding: 0 0 26px; position:relative; z-index:1; }
+  .card{ background:#fff; border: 1.5px solid var(--ink); border-radius: 8px; padding: 0 0 26px; position:relative; z-index:1; }
 
   /* ---------- Decorative banner ---------- */
   .banner{
@@ -193,6 +183,10 @@
   .ghost-btn.active{ background: var(--accent); color:#fff; border-color: var(--accent); }
   .toggle-row{ margin: 10px 0 8px; }
   .toggle-body{ margin: 0 0 14px; padding-left: 2px; }
+  .sub-caption{ font-size:0.78rem; color:var(--ink-soft); margin: -4px 0 10px; }
+  .checkbox-row{ margin: 12px 0 4px; }
+  .checkbox-label{ display:inline-flex; align-items:center; gap:7px; font-size:0.82rem; color:var(--ink); cursor:pointer; }
+  .checkbox-label input[type="checkbox"]{ width:15px; height:15px; accent-color: var(--accent); cursor:pointer; }
 
   /* ---------- Radio pill group (warrant approver) ---------- */
   .pillgroup{ display:flex; gap:8px; margin-bottom: 14px; }
@@ -282,145 +276,10 @@
     <div class="style-preview" id="stylePreview"></div>
   </div>
 
-  <div class="report-tabs">
-    <button class="report-tab active" data-report="arrest">Arrest</button>
-    <button class="report-tab" data-report="hostage">Hostage</button>
-    <button class="report-tab" data-report="incident">Incident</button>
-    <button class="report-tab" data-report="traffic">Traffic Ticket</button>
-    <button class="report-tab" data-report="warrant">Warrant</button>
-    <button class="report-tab" data-report="impound">Impound</button>
-    <button class="report-tab" data-report="vincrush">VIN Crush</button>
-  </div>
-
   <div class="card" id="card">
 
-    <!-- ================= ARREST ================= -->
-    <div class="report-panel active" data-panel="arrest">
-      <div class="banner" data-banner>
-        <div class="glyphline" data-glyph-top></div>
-        <h2>Arrest Report</h2>
-        <div class="sub" data-glyph-bottom></div>
-      </div>
-
-      <div class="section">
-        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Incident Information</span><span class="corner-glyph"></span><span class="st-line"></span></div>
-        <div class="grid">
-          <div class="field">
-            <label>Situation</label>
-            <select id="situationPreset">
-              <option value="">Quick pick&hellip;</option>
-              <option value="fleeca">Fleeca Bank Robbery</option>
-              <option value="pacific">Pacific Standard Robbery</option>
-              <option value="paleto">Paleto Bank Robbery</option>
-              <option value="banktruck">Bank/Armored Truck Robbery</option>
-              <option value="store">Store Robbery</option>
-              <option value="jewelry">Jewelry Store Robbery</option>
-              <option value="vehicletheft">Vehicle Theft</option>
-              <option value="pursuit">Vehicle Pursuit</option>
-              <option value="drugs">Drug Trafficking</option>
-              <option value="weapons">Weapons Trafficking</option>
-              <option value="assault">Assault / Altercation</option>
-              <option value="kidnap">Kidnapping</option>
-              <option value="other">Other / Custom</option>
-            </select>
-            <input type="text" class="inline-sub" data-f="arrest.situation" placeholder="e.g. Fleeca Bank Robbery">
-          </div>
-          <div class="field"><label>Suspect Acted</label>
-            <select data-f="arrest.accompany"><option>Alone</option><option>With Accomplice(s)</option><option>With Organized Crew</option></select>
-          </div>
-          <div class="field"><label>Location of Incident</label><input type="text" data-f="arrest.locIncident"></div>
-          <div class="field"><label>Location of Arrest</label><input type="text" data-f="arrest.locArrest"></div>
-          <div class="field"><label>Date of Incident</label><input type="date" data-f="arrest.date"></div>
-          <div class="field"><label>Time of Incident</label><input type="time" data-f="arrest.time"></div>
-        </div>
-      </div>
-
-      <div class="section">
-        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Summary</span><span class="corner-glyph"></span><span class="st-line"></span></div>
-        <label>Statement</label>
-        <textarea data-f="arrest.statement" rows="5" placeholder="Insert statement here..."></textarea>
-      </div>
-
-      <div class="section">
-        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Processing Information</span><span class="corner-glyph"></span><span class="st-line"></span></div>
-        <div class="grid">
-          <div class="field"><label>Medical</label>
-            <select data-f="arrest.medical"><option>Received at Pillbox</option><option>On Scene</option><option>No Medical Needed</option></select>
-          </div>
-          <div class="field"><label>Miranda Rights</label>
-            <select data-f="arrest.miranda"><option>Read &amp; Understood</option><option>Read, Not Understood</option><option>Waived</option></select>
-          </div>
-          <div class="field"><label>Legal Counsel</label>
-            <select data-f="arrest.legal"><option>Accepted</option><option>Not available</option><option>Denied</option></select>
-          </div>
-          <div class="field"><label>Food/Drink</label><select data-f="arrest.foodDrink"><option>Accepted</option><option>Denied</option></select></div>
-          <div class="field"><label>Fingerprints</label>
-            <select data-f="arrest.fingerprintsMode"><option value="Already Filed">Already Filed</option><option value="filedby">Filed by...</option></select>
-            <input type="text" class="inline-sub" style="display:none" data-f="arrest.fingerprintsBy" placeholder="Filed by (name)">
-          </div>
-          <div class="field"><label>Mugshot</label><select data-f="arrest.mugshot"><option>On File</option><option>Taken</option></select></div>
-          <div class="field"><label>DNA For Suspect Was</label><select data-f="arrest.dna"><option>Already On File</option><option>Taken</option></select></div>
-          <div class="field"><label>Suspect Tested For GSR &amp; Was</label><select data-f="arrest.gsr"><option>Positive</option><option>Negative</option></select></div>
-          <div class="field"><label>Plead</label><select data-f="arrest.plead"><option>Guilty</option><option>Not Guilty</option><option>No Contest</option></select></div>
-          <div class="field"><label>Transported to Bolingbroke by</label><select data-f="arrest.transport"><option>Local Guards</option><option>DOC</option></select></div>
-        </div>
-      </div>
-
-      <div class="section">
-        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Plea Deal / Reductions</span><span class="corner-glyph"></span><span class="st-line"></span></div>
-        <div class="grid">
-          <div class="field"><label>Lawyer</label><input type="text" data-f="arrest.lawyer"></div>
-          <div class="field"><label>SAO</label><input type="text" data-f="arrest.sao"></div>
-          <div class="field"><label>Time</label><input type="text" data-f="arrest.pleaTime"></div>
-          <div class="field"><label>Fine ($)</label><input type="text" data-f="arrest.fine"></div>
-        </div>
-      </div>
-
-      <div class="section">
-        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Evidence Information</span><span class="corner-glyph"></span><span class="st-line"></span></div>
-        <label>Items Confiscated</label>
-        <textarea data-f="arrest.evidence" rows="3" placeholder="One item per line..."></textarea>
-      </div>
-    </div>
-
-    <!-- ================= HOSTAGE ================= -->
-    <div class="report-panel" data-panel="hostage">
-      <div class="banner" data-banner>
-        <div class="glyphline" data-glyph-top></div>
-        <h2>Hostage Report</h2>
-        <div class="sub" data-glyph-bottom></div>
-      </div>
-
-      <div class="section">
-        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Incident Information</span><span class="corner-glyph"></span><span class="st-line"></span></div>
-        <div class="grid">
-          <div class="field"><label>Location of Incident</label><input type="text" data-f="hostage.locIncident"></div>
-          <div class="field"><label>Date of Incident</label><input type="date" data-f="hostage.date"></div>
-          <div class="field"><label>Time of Incident</label><input type="time" data-f="hostage.time"></div>
-        </div>
-      </div>
-
-      <div class="section">
-        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Hostage Information</span><span class="corner-glyph"></span><span class="st-line"></span></div>
-        <div class="grid">
-          <div class="field"><label>Taken From?</label><input type="text" data-f="hostage.takenFrom" placeholder="Location"></div>
-          <div class="field"><label>Injured?</label><select data-f="hostage.injured"><option>No</option><option>Yes</option></select></div>
-          <div class="field"><label>Food and Water?</label><select data-f="hostage.foodWater"><option>Yes</option><option>No</option><option>Given by Hostage Takers</option></select></div>
-          <div class="field"><label>Stolen Items?</label><select data-f="hostage.stolen"><option>No</option><option>Yes</option></select></div>
-          <div class="field"><label>Planted Items?</label><select data-f="hostage.planted"><option>No</option><option>Yes</option></select></div>
-          <div class="field"><label>Given Ride?</label><select data-f="hostage.ride"><option>No</option><option>Yes</option></select></div>
-        </div>
-      </div>
-
-      <div class="section">
-        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Summary</span><span class="corner-glyph"></span><span class="st-line"></span></div>
-        <label>Statement</label>
-        <textarea data-f="hostage.statement" rows="5" placeholder="Insert statement here..."></textarea>
-      </div>
-    </div>
-
     <!-- ================= INCIDENT ================= -->
-    <div class="report-panel" data-panel="incident">
+    <div class="report-panel active" data-panel="incident">
       <div class="banner" data-banner>
         <div class="glyphline" data-glyph-top></div>
         <h2>Incident Report</h2>
@@ -443,13 +302,26 @@
       </div>
 
       <div class="section">
+        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Add Details</span><span class="corner-glyph"></span><span class="st-line"></span></div>
+        <div class="sub-caption">Click to enable only the sections that apply to this incident.</div>
+
+        <!-- Hostage -->
         <div class="toggle-row">
           <button type="button" class="ghost-btn" id="incidentHostageToggle">+ Hostage involved</button>
         </div>
         <div class="toggle-body" id="incidentHostageWrap" style="display:none;">
-          <div class="field"><label>Hostage Name</label><input type="text" data-f="incident.hostageName" placeholder="Name"></div>
+          <div class="grid">
+            <div class="field"><label>Hostage Name</label><input type="text" data-f="incident.hostageName" placeholder="Name"></div>
+            <div class="field"><label>Taken From?</label><input type="text" data-f="incident.hostageTakenFrom" placeholder="Location"></div>
+            <div class="field"><label>Injured?</label><select data-f="incident.hostageInjured"><option>No</option><option>Yes</option></select></div>
+            <div class="field"><label>Food and Water?</label><select data-f="incident.hostageFoodWater"><option>Yes</option><option>No</option><option>Given by Hostage Takers</option></select></div>
+            <div class="field"><label>Stolen Items?</label><select data-f="incident.hostageStolen"><option>No</option><option>Yes</option></select></div>
+            <div class="field"><label>Planted Items?</label><select data-f="incident.hostagePlanted"><option>No</option><option>Yes</option></select></div>
+            <div class="field"><label>Given Ride?</label><select data-f="incident.hostageRide"><option>No</option><option>Yes</option></select></div>
+          </div>
         </div>
 
+        <!-- Cars involved -->
         <div class="toggle-row">
           <button type="button" class="ghost-btn" id="incidentVehicleToggle">+ Cars involved</button>
         </div>
@@ -457,198 +329,182 @@
           <label>Plate / Description (one per line)</label>
           <textarea data-f="incident.vehicles" rows="3" placeholder="e.g. ABC123 &#8211; Red Sultan"></textarea>
         </div>
-      </div>
-    </div>
 
-    <!-- ================= TRAFFIC TICKET ================= -->
-    <div class="report-panel" data-panel="traffic">
-      <div class="banner" data-banner>
-        <div class="glyphline" data-glyph-top></div>
-        <h2>Traffic Ticket Report</h2>
-        <div class="sub" data-glyph-bottom></div>
-      </div>
-
-      <div class="section">
-        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Incident Information</span><span class="corner-glyph"></span><span class="st-line"></span></div>
-        <div class="grid">
-          <div class="field"><label>Location of Incident</label><input type="text" data-f="traffic.locIncident"></div>
-          <div class="field"><label>Date of Incident</label><input type="date" data-f="traffic.date"></div>
-          <div class="field"><label>Time of Incident</label><input type="time" data-f="traffic.time"></div>
+        <!-- Arrest -->
+        <div class="toggle-row">
+          <button type="button" class="ghost-btn" id="arrestToggle">+ Arrest</button>
         </div>
-      </div>
-
-      <div class="section">
-        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Statement</span><span class="corner-glyph"></span><span class="st-line"></span></div>
-        <textarea data-f="traffic.statement" rows="4" placeholder="While on patrol I..."></textarea>
-      </div>
-
-      <div class="section">
-        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Vehicle &amp; Ticket</span><span class="corner-glyph"></span><span class="st-line"></span></div>
-        <div class="grid">
-          <div class="field"><label>Make/Model or Type</label><input type="text" data-f="traffic.makeModel"></div>
-          <div class="field"><label>Colour</label><input type="text" data-f="traffic.colour"></div>
-          <div class="field"><label>Plate</label><input type="text" data-f="traffic.plate"></div>
-          <div class="field"><label>R/O</label><input type="text" data-f="traffic.ro" placeholder="N/A"></div>
-          <div class="field"><label>Posted Speed Limit</label>
-            <select data-f="traffic.speedLimit">
-              <option>25mph</option><option>35mph</option><option>45mph</option>
-              <option selected>50mph</option><option>55mph</option><option>65mph</option>
-              <option>70mph</option><option>80mph</option>
-            </select>
+        <div class="toggle-body" id="arrestWrap" style="display:none;">
+          <div class="grid">
+            <div class="field">
+              <label>Situation</label>
+              <select id="situationPreset">
+                <option value="">Quick pick&hellip;</option>
+                <option value="fleeca">Fleeca Bank Robbery</option>
+                <option value="pacific">Pacific Standard Robbery</option>
+                <option value="paleto">Paleto Bank Robbery</option>
+                <option value="banktruck">Bank/Armored Truck Robbery</option>
+                <option value="store">Store Robbery</option>
+                <option value="jewelry">Jewelry Store Robbery</option>
+                <option value="vehicletheft">Vehicle Theft</option>
+                <option value="pursuit">Vehicle Pursuit</option>
+                <option value="drugs">Drug Trafficking</option>
+                <option value="weapons">Weapons Trafficking</option>
+                <option value="assault">Assault / Altercation</option>
+                <option value="kidnap">Kidnapping</option>
+                <option value="other">Other / Custom</option>
+              </select>
+              <input type="text" class="inline-sub" data-f="arrest.situation" placeholder="e.g. Fleeca Bank Robbery">
+            </div>
+            <div class="field"><label>Suspect Acted</label>
+              <select data-f="arrest.accompany"><option>Alone</option><option>With Accomplice(s)</option><option>With Organized Crew</option></select>
+            </div>
+            <div class="field"><label>Location of Arrest</label><input type="text" data-f="arrest.locArrest"></div>
           </div>
-          <div class="field"><label>Speed Clocked</label><input type="text" data-f="traffic.speedClocked" placeholder="e.g. 92"></div>
-          <div class="field"><label>Clocked With</label>
-            <select data-f="traffic.clockedWith"><option>Cruiser ALPR</option><option>Radar Gun</option></select>
+
+          <div class="grid" style="margin-top:12px;">
+            <div class="field"><label>Medical</label>
+              <select data-f="arrest.medical"><option>Received at Pillbox</option><option>On Scene</option><option>No Medical Needed</option></select>
+            </div>
+            <div class="field"><label>Miranda Rights</label>
+              <select data-f="arrest.miranda"><option>Read &amp; Understood</option><option>Read, Not Understood</option><option>Waived</option></select>
+            </div>
+            <div class="field"><label>Legal Counsel</label>
+              <select data-f="arrest.legal"><option>Accepted</option><option>Not available</option><option>Denied</option></select>
+            </div>
+            <div class="field"><label>Food/Drink</label><select data-f="arrest.foodDrink"><option>Accepted</option><option>Denied</option></select></div>
+            <div class="field"><label>Fingerprints</label>
+              <select data-f="arrest.fingerprintsMode"><option value="Already Filed">Already Filed</option><option value="filedby">Filed by...</option></select>
+              <input type="text" class="inline-sub" style="display:none" data-f="arrest.fingerprintsBy" placeholder="Filed by (name)">
+            </div>
+            <div class="field"><label>Mugshot</label><select data-f="arrest.mugshot"><option>On File</option><option>Taken</option></select></div>
+            <div class="field"><label>DNA For Suspect Was</label><select data-f="arrest.dna"><option>Already On File</option><option>Taken</option></select></div>
+            <div class="field"><label>Suspect Tested For GSR &amp; Was</label><select data-f="arrest.gsr"><option>Positive</option><option>Negative</option></select></div>
+            <div class="field"><label>Plead</label><select data-f="arrest.plead"><option>Guilty</option><option>Not Guilty</option><option>No Contest</option></select></div>
+            <div class="field"><label>Transported to Bolingbroke by</label><select data-f="arrest.transport"><option>Local Guards</option><option>DOC</option></select></div>
           </div>
-          <div class="field"><label>Driver Information</label><input type="text" data-f="traffic.driverInfo" placeholder="Name - CID"></div>
-        </div>
-        <div class="field" style="margin-top:12px;">
-          <label>Citation/Charge</label>
-          <textarea data-f="traffic.citation" rows="2" placeholder="One charge per line..."></textarea>
-        </div>
-        <div class="grid" style="margin-top:12px;">
-          <div class="field"><label>Fine ($)</label><input type="text" data-f="traffic.fine"></div>
-        </div>
-      </div>
-    </div>
 
-    <!-- ================= WARRANT ================= -->
-    <div class="report-panel" data-panel="warrant">
-      <div class="banner" data-banner>
-        <div class="glyphline" data-glyph-top></div>
-        <h2>Warrant Report</h2>
-        <div class="sub" data-glyph-bottom></div>
-      </div>
+          <div class="grid" style="margin-top:12px;">
+            <div class="field"><label>SAO</label><input type="text" data-f="arrest.sao"></div>
+            <div class="field"><label>Time</label><input type="text" data-f="arrest.pleaTime"></div>
+            <div class="field"><label>Fine ($)</label><input type="text" data-f="arrest.fine"></div>
+          </div>
+          <div class="checkbox-row">
+            <label class="checkbox-label"><input type="checkbox" id="arrestLawyerCheck"> Had a Lawyer</label>
+          </div>
+          <div class="grid" id="arrestLawyerWrap" style="display:none;">
+            <div class="field"><label>Lawyer Name</label><input type="text" data-f="arrest.lawyer"></div>
+            <div class="field"><label>Reduction (%)</label><input type="text" data-f="arrest.reduction" placeholder="e.g. 20"></div>
+          </div>
 
-      <div class="section">
-        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Warrant Approval</span><span class="corner-glyph"></span><span class="st-line"></span></div>
-        <div class="pillgroup">
-          <button type="button" class="pill active" data-approver="sasp">SASP Supervisor</button>
-          <button type="button" class="pill" data-approver="sao">SAO</button>
+          <div class="field" style="margin-top:12px;">
+            <label>Items Confiscated</label>
+            <textarea data-f="arrest.evidence" rows="3" placeholder="One item per line..."></textarea>
+          </div>
         </div>
-        <div class="approver-block grid active" data-approver-block="sasp">
-          <div class="field"><label>SASP Supervisor Full Name</label><input type="text" data-f="warrant.saspName"></div>
-          <div class="field"><label>SASP Supervisor Badge Number</label><input type="text" data-f="warrant.saspBadge"></div>
-          <div class="field"><label>SASP Supervisor Signature</label><input type="text" data-f="warrant.saspSig" placeholder="Typed name stands as signature"></div>
-          <div class="field"><label>Time &amp; Date Signed</label><input type="text" data-f="warrant.saspTime"></div>
+
+        <!-- Traffic Ticket -->
+        <div class="toggle-row">
+          <button type="button" class="ghost-btn" id="trafficToggle">+ Traffic Ticket</button>
         </div>
-        <div class="approver-block grid" data-approver-block="sao">
-          <div class="field"><label>SAO Full Name</label><input type="text" data-f="warrant.saoName"></div>
-          <div class="field"><label>SAO Signature</label><input type="text" data-f="warrant.saoSig"></div>
-          <div class="field"><label>Time &amp; Date Signed</label><input type="text" data-f="warrant.saoTime"></div>
+        <div class="toggle-body" id="trafficWrap" style="display:none;">
+          <div class="grid">
+            <div class="field"><label>Make/Model or Type</label><input type="text" data-f="traffic.makeModel"></div>
+            <div class="field"><label>Colour</label><input type="text" data-f="traffic.colour"></div>
+            <div class="field"><label>Plate</label><input type="text" data-f="traffic.plate"></div>
+            <div class="field"><label>R/O</label><input type="text" data-f="traffic.ro" placeholder="N/A"></div>
+            <div class="field"><label>Posted Speed Limit</label>
+              <select data-f="traffic.speedLimit">
+                <option>25mph</option><option>35mph</option><option>45mph</option>
+                <option selected>50mph</option><option>55mph</option><option>65mph</option>
+                <option>70mph</option><option>80mph</option>
+              </select>
+            </div>
+            <div class="field"><label>Speed Clocked</label><input type="text" data-f="traffic.speedClocked" placeholder="e.g. 92"></div>
+            <div class="field"><label>Clocked With</label>
+              <select data-f="traffic.clockedWith"><option>Cruiser ALPR</option><option>Radar Gun</option></select>
+            </div>
+            <div class="field"><label>Driver Information</label><input type="text" data-f="traffic.driverInfo" placeholder="Name - CID"></div>
+          </div>
+          <div class="field" style="margin-top:12px;">
+            <label>Citation/Charge</label>
+            <textarea data-f="traffic.citation" rows="2" placeholder="One charge per line..."></textarea>
+          </div>
+          <div class="grid" style="margin-top:12px;">
+            <div class="field"><label>Fine ($)</label><input type="text" data-f="traffic.fine"></div>
+          </div>
         </div>
-      </div>
 
-      <div class="section">
-        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Incident Information</span><span class="corner-glyph"></span><span class="st-line"></span></div>
-        <div class="grid">
-          <div class="field"><label>Location of Incident</label><input type="text" data-f="warrant.locIncident"></div>
-          <div class="field"><label>Location of Arrest</label><input type="text" data-f="warrant.locArrest"></div>
-          <div class="field"><label>Date of Incident</label><input type="date" data-f="warrant.date"></div>
-          <div class="field"><label>Time of Incident</label><input type="time" data-f="warrant.time"></div>
+        <!-- Warrant -->
+        <div class="toggle-row">
+          <button type="button" class="ghost-btn" id="warrantToggle">+ Warrant</button>
         </div>
-      </div>
-
-      <div class="section">
-        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Summary</span><span class="corner-glyph"></span><span class="st-line"></span></div>
-        <label>Statement</label>
-        <textarea data-f="warrant.statement" rows="5" placeholder="Insert statement here..."></textarea>
-      </div>
-
-      <div class="section">
-        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Charge List</span><span class="corner-glyph"></span><span class="st-line"></span></div>
-        <textarea data-f="warrant.charges" rows="3" placeholder="One charge per line..."></textarea>
-      </div>
-    </div>
-
-    <!-- ================= IMPOUND ================= -->
-    <div class="report-panel" data-panel="impound">
-      <div class="banner" data-banner>
-        <div class="glyphline" data-glyph-top></div>
-        <h2>State Impound</h2>
-        <div class="sub" data-glyph-bottom></div>
-      </div>
-
-      <div class="section">
-        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Incident Information</span><span class="corner-glyph"></span><span class="st-line"></span></div>
-        <div class="grid">
-          <div class="field"><label>Location of Incident</label><input type="text" data-f="impound.locIncident"></div>
-          <div class="field"><label>Original Scenario</label><input type="text" data-f="impound.scenario"></div>
-          <div class="field"><label>Date of Incident</label><input type="date" data-f="impound.date"></div>
-          <div class="field"><label>Time of Incident</label><input type="time" data-f="impound.time"></div>
+        <div class="toggle-body" id="warrantWrap" style="display:none;">
+          <div class="pillgroup">
+            <button type="button" class="pill active" data-approver="sasp">SASP Supervisor</button>
+            <button type="button" class="pill" data-approver="sao">SAO</button>
+          </div>
+          <div class="approver-block grid active" data-approver-block="sasp">
+            <div class="field"><label>SASP Supervisor Full Name</label><input type="text" data-f="warrant.saspName"></div>
+            <div class="field"><label>SASP Supervisor Badge Number</label><input type="text" data-f="warrant.saspBadge"></div>
+            <div class="field"><label>SASP Supervisor Signature</label><input type="text" data-f="warrant.saspSig" placeholder="Typed name stands as signature"></div>
+            <div class="field"><label>Time &amp; Date Signed</label><input type="text" data-f="warrant.saspTime"></div>
+          </div>
+          <div class="approver-block grid" data-approver-block="sao">
+            <div class="field"><label>SAO Full Name</label><input type="text" data-f="warrant.saoName"></div>
+            <div class="field"><label>SAO Signature</label><input type="text" data-f="warrant.saoSig"></div>
+            <div class="field"><label>Time &amp; Date Signed</label><input type="text" data-f="warrant.saoTime"></div>
+          </div>
+          <div class="grid" style="margin-top:12px;">
+            <div class="field"><label>Location of Arrest</label><input type="text" data-f="warrant.locArrest"></div>
+          </div>
+          <div style="margin-top:12px;">
+            <label>Charge List</label>
+            <textarea data-f="warrant.charges" rows="3" placeholder="One charge per line..."></textarea>
+          </div>
         </div>
-      </div>
 
-      <div class="section">
-        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Summary</span><span class="corner-glyph"></span><span class="st-line"></span></div>
-        <label>Summary</label>
-        <textarea data-f="impound.statement" rows="4" placeholder="Summary..."></textarea>
-      </div>
-
-      <div class="section">
-        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Vehicle Information</span><span class="corner-glyph"></span><span class="st-line"></span></div>
-        <div class="grid">
-          <div class="field"><label>Model</label><input type="text" data-f="impound.model"></div>
-          <div class="field"><label>Plate</label><input type="text" data-f="impound.plate"></div>
+        <!-- Impound -->
+        <div class="toggle-row">
+          <button type="button" class="ghost-btn" id="impoundToggle">+ Impound</button>
         </div>
-      </div>
-    </div>
-
-    <!-- ================= VIN CRUSH ================= -->
-    <div class="report-panel" data-panel="vincrush">
-      <div class="banner" data-banner>
-        <div class="glyphline" data-glyph-top></div>
-        <h2>VIN Crush Report</h2>
-        <div class="sub" data-glyph-bottom></div>
-      </div>
-
-      <div class="section">
-        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Date &amp; Time</span><span class="corner-glyph"></span><span class="st-line"></span></div>
-        <div class="grid">
-          <div class="field"><label>Date</label><input type="date" data-f="vincrush.date"></div>
-          <div class="field"><label>Time</label><input type="time" data-f="vincrush.time"></div>
+        <div class="toggle-body" id="impoundWrap" style="display:none;">
+          <div class="grid">
+            <div class="field"><label>Original Scenario</label><input type="text" data-f="impound.scenario"></div>
+            <div class="field"><label>Model</label><input type="text" data-f="impound.model"></div>
+            <div class="field"><label>Plate</label><input type="text" data-f="impound.plate"></div>
+          </div>
         </div>
-      </div>
 
-      <div class="section">
-        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Vehicle Information</span><span class="corner-glyph"></span><span class="st-line"></span></div>
-        <div class="grid">
-          <div class="field"><label>Make/Model</label><input type="text" data-f="vincrush.makeModel"></div>
-          <div class="field"><label>Color</label><input type="text" data-f="vincrush.color"></div>
-          <div class="field"><label>License Plate</label><input type="text" data-f="vincrush.plate"></div>
-          <div class="field"><label>Registered Owner</label><input type="text" data-f="vincrush.owner" placeholder="N/A"></div>
+        <!-- VIN Crush -->
+        <div class="toggle-row">
+          <button type="button" class="ghost-btn" id="vincrushToggle">+ VIN Crush</button>
         </div>
-      </div>
-
-      <div class="section">
-        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Crush Authorization</span><span class="corner-glyph"></span><span class="st-line"></span></div>
-        <div class="grid">
-          <div class="field"><label>Reason for Crush</label><input type="text" data-f="vincrush.reason"></div>
-          <div class="field"><label>Date of Authorization</label><input type="date" data-f="vincrush.authDate"></div>
+        <div class="toggle-body" id="vincrushWrap" style="display:none;">
+          <div class="grid">
+            <div class="field"><label>Make/Model</label><input type="text" data-f="vincrush.makeModel"></div>
+            <div class="field"><label>Color</label><input type="text" data-f="vincrush.color"></div>
+            <div class="field"><label>License Plate</label><input type="text" data-f="vincrush.plate"></div>
+            <div class="field"><label>Registered Owner</label><input type="text" data-f="vincrush.owner" placeholder="N/A"></div>
+          </div>
+          <div class="grid" style="margin-top:12px;">
+            <div class="field"><label>Reason for Crush</label><input type="text" data-f="vincrush.reason"></div>
+            <div class="field"><label>Date of Authorization</label><input type="date" data-f="vincrush.authDate"></div>
+          </div>
+          <div class="field" style="margin-top:12px;">
+            <label>Authorized By (one per line &#8212; badge &amp; name)</label>
+            <textarea data-f="vincrush.authBy" rows="3" placeholder="799 Gabriel Reyka&#10;222 Sophie Hawthorne&#10;104 Tim Spades"></textarea>
+          </div>
+          <div class="grid" style="margin-top:12px;">
+            <div class="field"><label>Crush Location</label><input type="text" data-f="vincrush.location"></div>
+            <div class="field"><label>Personnel</label><input type="text" data-f="vincrush.personnel"></div>
+            <div class="field"><label>Crush Date</label><input type="date" data-f="vincrush.crushDate"></div>
+          </div>
+          <div class="field" style="margin-top:12px;">
+            <label>Crush Outcome</label>
+            <textarea data-f="vincrush.outcome" rows="2" placeholder="Vehicle was taken to the crush spot and was crushed."></textarea>
+          </div>
         </div>
-        <div class="field" style="margin-top:12px;">
-          <label>Authorized By (one per line — badge &amp; name)</label>
-          <textarea data-f="vincrush.authBy" rows="3" placeholder="799 Gabriel Reyka&#10;222 Sophie Hawthorne&#10;104 Tim Spades"></textarea>
-        </div>
-      </div>
-
-      <div class="section">
-        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Crush Procedure</span><span class="corner-glyph"></span><span class="st-line"></span></div>
-        <div class="grid">
-          <div class="field"><label>Location</label><input type="text" data-f="vincrush.location"></div>
-          <div class="field"><label>Personnel</label><input type="text" data-f="vincrush.personnel"></div>
-          <div class="field"><label>Crush Date</label><input type="date" data-f="vincrush.crushDate"></div>
-        </div>
-        <div class="field" style="margin-top:12px;">
-          <label>Crush Outcome</label>
-          <textarea data-f="vincrush.outcome" rows="2" placeholder="Vehicle was taken to the crush spot and was crushed."></textarea>
-        </div>
-      </div>
-
-      <div class="section">
-        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Summary</span><span class="corner-glyph"></span><span class="st-line"></span></div>
-        <label>Summary</label>
-        <textarea data-f="vincrush.statement" rows="5" placeholder="Insert summary here..."></textarea>
       </div>
     </div>
 
@@ -823,6 +679,46 @@
     if(incidentVehicleActive){ document.querySelector('[data-f="incident.vehicles"]').focus(); }
   });
 
+  /* ---------------- arrest report: had a lawyer? ---------------- */
+  var arrestLawyerCheck = document.getElementById('arrestLawyerCheck');
+  var arrestLawyerWrap = document.getElementById('arrestLawyerWrap');
+  arrestLawyerCheck.checked = storage.get('arrestLawyerCheck') === '1';
+  function refreshArrestLawyer(){
+    arrestLawyerWrap.style.display = arrestLawyerCheck.checked ? 'grid' : 'none';
+  }
+  refreshArrestLawyer();
+  arrestLawyerCheck.addEventListener('change', function(){
+    storage.set('arrestLawyerCheck', arrestLawyerCheck.checked ? '1' : '0');
+    refreshArrestLawyer();
+    if(arrestLawyerCheck.checked){ document.querySelector('[data-f="arrest.lawyer"]').focus(); }
+  });
+
+  /* ---------------- optional report sections: generic toggle helper ---------------- */
+  function setupSectionToggle(toggleId, wrapId, storageKey, displayMode){
+    var btn = document.getElementById(toggleId);
+    var wrap = document.getElementById(wrapId);
+    var label = btn.textContent.replace(/^[+\u2212]\s*/, '');
+    var state = { active: storage.get(storageKey) === '1' };
+    function refresh(){
+      wrap.style.display = state.active ? (displayMode || 'block') : 'none';
+      btn.classList.toggle('active', state.active);
+      btn.textContent = (state.active ? '\u2212 ' : '+ ') + label;
+    }
+    refresh();
+    btn.addEventListener('click', function(){
+      state.active = !state.active;
+      storage.set(storageKey, state.active ? '1' : '0');
+      refresh();
+    });
+    return state;
+  }
+
+  var arrestState = setupSectionToggle('arrestToggle', 'arrestWrap', 'arrestActive');
+  var trafficState = setupSectionToggle('trafficToggle', 'trafficWrap', 'trafficActive');
+  var warrantState = setupSectionToggle('warrantToggle', 'warrantWrap', 'warrantActive');
+  var impoundState = setupSectionToggle('impoundToggle', 'impoundWrap', 'impoundActive');
+  var vincrushState = setupSectionToggle('vincrushToggle', 'vincrushWrap', 'vincrushActive');
+
   /* ---------------- divider style settings ---------------- */
   var CORNERS = ['✦','◆','★','☆','❖','▸','➤','§','♛','☙','❧','♱','⚖','✿','❀','⚔','┊','⫽','〢','▪',''];
   var LINES = ['─','═','-','=','┈','┄','•','~','▓','░','▬','·','・','∙','⋆'];
@@ -923,16 +819,6 @@
   });
 
   refreshStyleUI();
-
-  /* ---------------- report tab switching ---------------- */
-  var currentReport = 'arrest';
-  document.querySelectorAll('.report-tab').forEach(function(tab){
-    tab.addEventListener('click', function(){
-      currentReport = tab.dataset.report;
-      document.querySelectorAll('.report-tab').forEach(function(t){ t.classList.toggle('active', t === tab); });
-      document.querySelectorAll('.report-panel').forEach(function(p){ p.classList.toggle('active', p.dataset.panel === currentReport); });
-    });
-  });
 
   /* ---------------- fingerprints conditional field ---------------- */
   var fpSelect = document.querySelector('[data-f="arrest.fingerprintsMode"]');
@@ -1150,8 +1036,15 @@
 
     if(incidentHostageActive){
       lines.push('');
-      lines.push(headerLine(style.sc, style.sl, style.len, 'Hostage'));
+      lines.push(headerLine(style.sc, style.sl, style.len, 'Hostage Information'));
+      lines.push('');
       lines.push('*  HOSTAGE: ' + dash(val('incident.hostageName')));
+      lines.push('* Taken From? ' + dash(val('incident.hostageTakenFrom')));
+      lines.push('* Injured? ' + val('incident.hostageInjured'));
+      lines.push('* Food and Water? ' + val('incident.hostageFoodWater'));
+      lines.push('* Stolen Items? ' + val('incident.hostageStolen'));
+      lines.push('* Planted Items? ' + val('incident.hostagePlanted'));
+      lines.push('* Given Ride? ' + val('incident.hostageRide'));
     }
 
     if(incidentVehicleActive){
@@ -1161,198 +1054,116 @@
       lines = lines.concat(vehicles.length ? vehicles : ['XXX']);
     }
 
+    if(arrestState.active){
+      var fp = val('arrest.fingerprintsMode') === 'filedby' ? ('Filed by ' + dash(val('arrest.fingerprintsBy'))) : 'Already Filed';
+      lines.push('');
+      lines.push(headerLine(style.sc, style.sl, style.len, 'Arrest Information'));
+      lines.push('');
+      lines.push('*  SITUATION: ' + dash(val('arrest.situation')));
+      lines.push('*  SUSPECT ACTED: ' + val('arrest.accompany'));
+      lines.push('*  LOCATION OF ARREST: ' + dash(val('arrest.locArrest')));
+      lines.push('');
+      lines.push(headerLine(style.sc, style.sl, style.len, 'Processing Information'));
+      lines.push('');
+      lines.push('* Medical: ' + val('arrest.medical'));
+      lines.push('* Miranda Rights: ' + val('arrest.miranda'));
+      lines.push('* Legal Counsel: ' + val('arrest.legal'));
+      lines.push('* Food/Drink: ' + val('arrest.foodDrink'));
+      lines.push('* Fingerprints: ' + fp);
+      lines.push('* Mugshot: ' + val('arrest.mugshot'));
+      lines.push('* DNA For Suspect Was: ' + val('arrest.dna'));
+      lines.push('* Suspect Tested For GSR & Was: ' + val('arrest.gsr'));
+      lines.push('* Plead: ' + val('arrest.plead'));
+      lines.push('* Transported to Bolingbroke by: ' + val('arrest.transport'));
+      if(arrestLawyerCheck.checked){
+        lines.push('');
+        lines.push(headerLine(style.sc, style.sl, style.len, 'Plea Deal / Reductions'));
+        lines.push('');
+        lines.push('* SAO: ' + dash(val('arrest.sao')));
+        lines.push('* Time: ' + dash(val('arrest.pleaTime')));
+        lines.push('* Fine: $' + (val('arrest.fine') || '0'));
+        lines.push('* LAWYER: ' + dash(val('arrest.lawyer')));
+        lines.push('* Reduction: ' + (val('arrest.reduction') || '0') + '%');
+      }
+      lines.push('');
+      lines.push(headerLine(style.sc, style.sl, style.len, 'Evidence Information'));
+      lines.push('Items Confiscated:');
+      lines.push(linesFrom(val('arrest.evidence')).join('\n'));
+    }
+
+    if(trafficState.active){
+      lines.push('');
+      lines.push(headerLine(style.sc, style.sl, style.len, 'Traffic Ticket'));
+      lines.push('');
+      lines.push('* Make/Model or Type: ' + dash(val('traffic.makeModel')));
+      lines.push('* Colour: ' + dash(val('traffic.colour')));
+      lines.push('* Plate: ' + dash(val('traffic.plate')));
+      lines.push('* R/O: ' + (val('traffic.ro') || 'N/A'));
+      lines.push('* Posted Speed Limit: ' + val('traffic.speedLimit'));
+      lines.push('* Speed Clocked: ' + dash(val('traffic.speedClocked')) + ' mph');
+      lines.push('* Clocked with: ' + val('traffic.clockedWith'));
+      lines.push('* Driver Information: ' + dash(val('traffic.driverInfo')));
+      lines.push('* Citation/Charge: ' + (linesFrom(val('traffic.citation')).join(', ') || 'XXX'));
+      lines.push('* Fine: $' + (val('traffic.fine') || '0'));
+    }
+
+    if(warrantState.active){
+      var usesSasp = document.querySelector('[data-approver="sasp"]').classList.contains('active');
+      lines.push('');
+      lines.push(headerLine(style.sc, style.sl, style.len, 'Warrant Approval'));
+      lines.push('');
+      if(usesSasp){
+        lines.push('* SASP Supervisor Full Name: ' + dash(val('warrant.saspName')));
+        lines.push('* SASP Supervisor Badge Number: ' + dash(val('warrant.saspBadge')));
+        lines.push('* SASP Supervisor Signature: ' + dash(val('warrant.saspSig')));
+        lines.push('* Time & Date Signed: ' + dash(val('warrant.saspTime')));
+      } else {
+        lines.push('* SAO Full Name: ' + dash(val('warrant.saoName')));
+        lines.push('* SAO Signature: ' + dash(val('warrant.saoSig')));
+        lines.push('* Time & Date Signed: ' + dash(val('warrant.saoTime')));
+      }
+      lines.push('* Location of Arrest: ' + dash(val('warrant.locArrest')));
+      lines.push('');
+      lines.push(headerLine(style.sc, style.sl, style.len, 'Charge List'));
+      var charges = linesFrom(val('warrant.charges'));
+      lines = lines.concat(charges.length ? charges : ['XXX']);
+    }
+
+    if(impoundState.active){
+      lines.push('');
+      lines.push(headerLine(style.sc, style.sl, style.len, 'Impound Information'));
+      lines.push('');
+      lines.push('* ORIGINAL SCENARIO: ' + dash(val('impound.scenario')));
+      lines.push('* MODEL: ' + dash(val('impound.model')));
+      lines.push('* PLATE: ' + dash(val('impound.plate')));
+    }
+
+    if(vincrushState.active){
+      var authDate = fmtDateOnly(val('vincrush.authDate'));
+      var crushDate = fmtDateOnly(val('vincrush.crushDate'));
+      var authorizedBy = linesFrom(val('vincrush.authBy')).join(', ') || 'XXX';
+      lines.push('');
+      lines.push(headerLine(style.sc, style.sl, style.len, 'VIN Crush'));
+      lines.push('');
+      lines.push('* Make/Model: ' + dash(val('vincrush.makeModel')));
+      lines.push('* Color: ' + dash(val('vincrush.color')));
+      lines.push('* License Plate: ' + dash(val('vincrush.plate')));
+      lines.push('* Registered Owner: ' + (val('vincrush.owner') || 'N/A'));
+      lines.push('* Reason for Crush: ' + dash(val('vincrush.reason')));
+      lines.push('* Date of Authorization: ' + authDate);
+      lines.push('* Authorized By: ' + authorizedBy);
+      lines.push('* Crush Location: ' + dash(val('vincrush.location')));
+      lines.push('* Personnel: ' + dash(val('vincrush.personnel')));
+      lines.push('* Crush Date: ' + crushDate);
+      lines.push('* Crush Outcome: ' + dash(val('vincrush.outcome')));
+    }
+
     return lines.filter(function(l){ return l !== undefined; }).join('\n');
   }
 
-  function buildArrest(){
-    var o = officerLine();
-    var fp = val('arrest.fingerprintsMode') === 'filedby' ? ('Filed by ' + dash(val('arrest.fingerprintsBy'))) : 'Already Filed';
-    return [
-      headerLine(style.bc, style.bl, style.len, 'Arrest Report'),
-      headerLine(style.sc, style.sl, style.len, 'Incident Information'),
-      '',
-      '*  ARRESTING DEPUTY: ' + o,
-      ftoValue() ? ('*  SUPERVISING FTO: ' + ftoValue()) : undefined,
-      '*  SITUATION: ' + dash(val('arrest.situation')),
-      '*  SUSPECT ACTED: ' + val('arrest.accompany'),
-      '*  LOCATION OF INCIDENT: ' + dash(val('arrest.locIncident')),
-      '*  LOCATION OF ARREST: ' + dash(val('arrest.locArrest')),
-      '*  DATE & TIME OF INCIDENT: ' + fmtDate('arrest'),
-      '',
-      headerLine(style.sc, style.sl, style.len, 'Summary'),
-      dash(val('arrest.statement') || '[Insert Statement Here]'),
-      headerLine(style.sc, style.sl, style.len, 'Processing Information'),
-      '',
-      '* Medical: ' + val('arrest.medical'),
-      '* Miranda Rights: ' + val('arrest.miranda'),
-      '* Legal Counsel: ' + val('arrest.legal'),
-      '* Food/Drink: ' + val('arrest.foodDrink'),
-      '* Fingerprints: ' + fp,
-      '* Mugshot: ' + val('arrest.mugshot'),
-      '* DNA For Suspect Was: ' + val('arrest.dna'),
-      '* Suspect Tested For GSR & Was: ' + val('arrest.gsr'),
-      '* Plead: ' + val('arrest.plead'),
-      '* Transported to Bolingbroke by: ' + val('arrest.transport'),
-      '',
-      headerLine(style.sc, style.sl, style.len, 'Plea Deal / Reductions'),
-      '',
-      '* LAWYER: ' + dash(val('arrest.lawyer')),
-      '* SAO: ' + dash(val('arrest.sao')),
-      '* Time: ' + dash(val('arrest.pleaTime')),
-      '* Fine: $' + (val('arrest.fine') || '0'),
-      '',
-      headerLine(style.sc, style.sl, style.len, 'Evidence Information'),
-      'Items Confiscated:',
-      linesFrom(val('arrest.evidence')).join('\n')
-    ].filter(function(l){ return l !== undefined; }).join('\n');
-  }
-
-  function buildHostage(){
-    var o = officerLine();
-    return [
-      headerLine(style.bc, style.bl, style.len, 'Hostage Report'),
-      headerLine(style.sc, style.sl, style.len, 'Incident Information'),
-      '',
-      '*  ARRESTING DEPUTY: ' + o,
-      ftoValue() ? ('*  SUPERVISING FTO: ' + ftoValue()) : undefined,
-      '*  LOCATION OF INCIDENT: ' + dash(val('hostage.locIncident')),
-      '* DATE & TIME OF INCIDENT: ' + fmtDate('hostage'),
-      '',
-      headerLine(style.sc, style.sl, style.len, 'Hostage Information'),
-      '',
-      '* Taken From? ' + dash(val('hostage.takenFrom')),
-      '* Injured? ' + val('hostage.injured'),
-      '* Food and Water? ' + val('hostage.foodWater'),
-      '* Stolen Items? ' + val('hostage.stolen'),
-      '* Planted items? ' + val('hostage.planted'),
-      '* Given Ride? ' + val('hostage.ride'),
-      '',
-      headerLine(style.sc, style.sl, style.len, 'Summary'),
-      dash(val('hostage.statement') || '[Insert Statement Here]')
-    ].filter(function(l){ return l !== undefined; }).join('\n');
-  }
-
-  function buildWarrant(){
-    var o = officerLine();
-    var usesSasp = document.querySelector('[data-approver="sasp"]').classList.contains('active');
-    var approvalLines;
-    if(usesSasp){
-      approvalLines = [
-        '* SASP Supervisor Full Name: ' + dash(val('warrant.saspName')),
-        '* SASP Supervisor Badge Number: ' + dash(val('warrant.saspBadge')),
-        '* SASP Supervisor Signature: ' + dash(val('warrant.saspSig')),
-        '* Time & Date Signed: ' + dash(val('warrant.saspTime'))
-      ];
-    } else {
-      approvalLines = [
-        '* SAO Full Name: ' + dash(val('warrant.saoName')),
-        '* SAO Signature: ' + dash(val('warrant.saoSig')),
-        '* Time & Date Signed: ' + dash(val('warrant.saoTime'))
-      ];
-    }
-    return [
-      headerLine(style.bc, style.bl, style.len, 'Warrant Report'),
-      headerLine(style.sc, style.sl, style.len, 'Warrant Approval'),
-      ''
-    ].concat(approvalLines).concat([
-      '',
-      headerLine(style.sc, style.sl, style.len, 'Incident Information'),
-      '',
-      '*  ARRESTING OFFICER(S): ' + o,
-      ftoValue() ? ('*  SUPERVISING FTO: ' + ftoValue()) : undefined,
-      '*  LOCATION OF INCIDENT: ' + dash(val('warrant.locIncident')),
-      '*  LOCATION OF ARREST: ' + dash(val('warrant.locArrest')),
-      '* DATE & TIME OF INCIDENT: ' + fmtDate('warrant'),
-      '',
-      headerLine(style.sc, style.sl, style.len, 'Summary'),
-      dash(val('warrant.statement') || '[Insert Statement Here]'),
-      headerLine(style.sc, style.sl, style.len, 'Charge List')
-    ]).concat(linesFrom(val('warrant.charges'))).filter(function(l){ return l !== undefined; }).join('\n');
-  }
-
-  function buildImpound(){
-    var o = officerLine();
-    return [
-      headerLine(style.bc, style.bl, style.len, 'STATE IMPOUND'),
-      headerLine(style.sc, style.sl, style.len, 'Incident Information'),
-      '',
-      '*  ARRESTING OFFICER(S): ' + o,
-      ftoValue() ? ('*  SUPERVISING FTO: ' + ftoValue()) : undefined,
-      '*  LOCATION OF INCIDENT: ' + dash(val('impound.locIncident')),
-      '* ORIGINAL SCENARIO: ' + dash(val('impound.scenario')),
-      '* DATE & TIME OF INCIDENT: ' + fmtDate('impound'),
-      '',
-      headerLine(style.sc, style.sl, style.len, 'Summary'),
-      dash(val('impound.statement')),
-      headerLine(style.sc, style.sl, style.len, 'Vehicle Information'),
-      '',
-      '* MODEL: ' + dash(val('impound.model')),
-      '* PLATE: ' + dash(val('impound.plate'))
-    ].filter(function(l){ return l !== undefined; }).join('\n');
-  }
-
-  function buildVinCrush(){
-    var d = fmtDateOnly(val('vincrush.date'));
-    var t = to12Hour(val('vincrush.time'));
-    var dateTime = d + (t ? (' @ ' + t + ' EST') : '');
-    var authDate = fmtDateOnly(val('vincrush.authDate'));
-    var crushDate = fmtDateOnly(val('vincrush.crushDate'));
-    var authorizedBy = linesFrom(val('vincrush.authBy')).join(', ') || 'XXX';
-
-    return [
-      headerLine(style.bc, style.bl, style.len, 'VIN Crush Report'),
-      'DATE & TIME: ' + dateTime,
-      '',
-      'Vehicle Information',
-      '',
-      '* Make/Model: ' + dash(val('vincrush.makeModel')),
-      '* Color: ' + dash(val('vincrush.color')),
-      '* License Plate: ' + dash(val('vincrush.plate')),
-      '* Registered Owner: ' + (val('vincrush.owner') || 'N/A'),
-      '',
-      'Crush Authorization:',
-      '',
-      '* Reason for Crush: ' + dash(val('vincrush.reason')),
-      '* Date of Authorization: ' + authDate,
-      '* Authorized By: ' + authorizedBy,
-      '',
-      'Crush Procedure:',
-      'Location: ' + dash(val('vincrush.location')),
-      'Personnel: ' + dash(val('vincrush.personnel')),
-      'Crush Date: ' + crushDate,
-      'Crush Outcome: ' + dash(val('vincrush.outcome')),
-      'SUMMARY: ' + dash(val('vincrush.statement'))
-    ].join('\n');
-  }
-
-  function buildTraffic(){
-    var o = officerLine();
-    return [
-      headerLine(style.bc, style.bl, style.len, 'TRAFFIC TICKET REPORT'),
-      'Involved Officer: ' + o,
-      ftoValue() ? ('Supervising FTO: ' + ftoValue()) : undefined,
-      'Location of Incident: ' + dash(val('traffic.locIncident')),
-      'Date & Time of Incident: ' + fmtDateTilde('traffic'),
-      '',
-      headerLine(style.sc, style.sl, style.len, o + ' STATEMENT'),
-      dash(val('traffic.statement') || '[Insert Statement Here]'),
-      '',
-      headerLine(style.sc, style.sl, style.len, 'VEHICLE & TICKET'),
-      'Make/Model or Type: ' + dash(val('traffic.makeModel')),
-      'Colour: ' + dash(val('traffic.colour')),
-      'Plate: ' + dash(val('traffic.plate')),
-      'R/O: ' + (val('traffic.ro') || 'N/A'),
-      'Posted Speed Limit: ' + val('traffic.speedLimit'),
-      'Speed Clocked: ' + dash(val('traffic.speedClocked')) + ' mph',
-      'Clocked with: ' + val('traffic.clockedWith'),
-      'Driver Information: ' + dash(val('traffic.driverInfo')),
-      'Citation/Charge: ' + (linesFrom(val('traffic.citation')).join(', ') || 'XXX'),
-      'Fine: $' + (val('traffic.fine') || '0')
-    ].filter(function(l){ return l !== undefined; }).join('\n');
-  }
-
-  var builders = { incident: buildIncident, arrest: buildArrest, hostage: buildHostage, warrant: buildWarrant, impound: buildImpound, vincrush: buildVinCrush, traffic: buildTraffic };
-  var titles = { incident: 'Incident Report', arrest: 'Arrest Report', hostage: 'Hostage Report', warrant: 'Warrant Report', impound: 'State Impound', vincrush: 'VIN Crush Report', traffic: 'Traffic Ticket Report' };
+  var builders = { incident: buildIncident };
+  var titles = { incident: 'Incident Report' };
+  var currentReport = 'incident';
   var lastOutput = '';
 
   document.getElementById('generateBtn').addEventListener('click', function(){
