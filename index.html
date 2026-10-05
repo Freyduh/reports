@@ -473,6 +473,12 @@
             <div class="field"><label>Original Scenario</label><input type="text" data-f="impound.scenario"></div>
             <div class="field"><label>Model</label><input type="text" data-f="impound.model"></div>
             <div class="field"><label>Plate</label><input type="text" data-f="impound.plate"></div>
+            <div class="field"><label>Time Until Unimpound</label>
+              <select data-f="impound.duration"><option>1 Day</option><option>2 Days</option><option>4 Days</option><option>1 Week</option></select>
+            </div>
+          </div>
+          <div class="checkbox-row">
+            <label class="checkbox-label"><input type="checkbox" id="impoundStrike"> Striked</label>
           </div>
         </div>
 
@@ -864,6 +870,16 @@
     var parts = v.split('-');
     return parts[1] + '/' + parts[2] + '/' + parts[0];
   }
+  function fmtEST(d){
+    var parts = {};
+    new Intl.DateTimeFormat('en-US', { timeZone:'America/New_York', year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', hourCycle:'h23' })
+      .formatToParts(d).forEach(function(p){ parts[p.type] = p.value; });
+    return parts.month + '/' + parts.day + '/' + parts.year + ' ~ ' + parts.hour + parts.minute + 'h EST';
+  }
+  function impoundRelease(label, from){
+    var days = { '1 Day':1, '2 Days':2, '4 Days':4, '1 Week':7 }[label] || 1;
+    return new Date(from.getTime() + days * 24 * 60 * 60 * 1000);
+  }
   function fmtDateTilde(reportKey){
     var d = val(reportKey + '.date');
     var t = val(reportKey + '.time');
@@ -1136,6 +1152,11 @@
       lines.push('* ORIGINAL SCENARIO: ' + dash(val('impound.scenario')));
       lines.push('* MODEL: ' + dash(val('impound.model')));
       lines.push('* PLATE: ' + dash(val('impound.plate')));
+      var impoundedAt = new Date();
+      var dur = val('impound.duration') || '1 Day';
+      lines.push('* IMPOUNDED: ' + fmtEST(impoundedAt));
+      lines.push('* UNIMPOUND TIME: ' + dur + ' (' + fmtEST(impoundRelease(dur, impoundedAt)) + ')');
+      lines.push('* STRIKED: ' + (document.getElementById('impoundStrike').checked ? '[X] Yes  [ ] No' : '[ ] Yes  [X] No'));
     }
 
     if(vincrushState.active){
