@@ -573,8 +573,14 @@
       <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Header &amp; Signature Links</span><span class="corner-glyph"></span><span class="st-line"></span></div>
       <div class="sub-caption"><strong>Note:</strong> both links should be <strong>FiveManage</strong> links.</div>
       <div class="grid">
-        <div class="field"><label>Header Link</label><input type="text" data-f="links.header" placeholder="FiveManage link"></div>
-        <div class="field"><label>Signature Link</label><input type="text" data-f="links.signature" placeholder="FiveManage link"></div>
+        <div class="field">
+          <label class="checkbox-label"><input type="checkbox" id="headerOn"> Include header</label>
+          <input type="text" data-f="links.header" id="headerLink" placeholder="FiveManage link">
+        </div>
+        <div class="field">
+          <label class="checkbox-label"><input type="checkbox" id="sigOn"> Include signature</label>
+          <input type="text" data-f="links.signature" id="sigLink" placeholder="FiveManage link">
+        </div>
       </div>
     </div>
 
@@ -1144,9 +1150,21 @@
     return lines.filter(function(l){ return l !== undefined; }).join('\n');
   }
 
+  var headerOn = document.getElementById('headerOn'), sigOn = document.getElementById('sigOn');
+  var headerLink = document.getElementById('headerLink'), sigLink = document.getElementById('sigLink');
+  headerOn.checked = storage.get('headerOn') !== '0';
+  sigOn.checked = storage.get('sigOn') !== '0';
+  function refreshLinkToggles(){
+    headerLink.style.display = headerOn.checked ? '' : 'none';
+    sigLink.style.display = sigOn.checked ? '' : 'none';
+  }
+  refreshLinkToggles();
+  headerOn.addEventListener('change', function(){ storage.set('headerOn', headerOn.checked ? '1' : '0'); refreshLinkToggles(); });
+  sigOn.addEventListener('change', function(){ storage.set('sigOn', sigOn.checked ? '1' : '0'); refreshLinkToggles(); });
+
   function buildReport(){
     var out = builders[currentReport]();
-    var h = val('links.header'), sg = val('links.signature');
+    var h = headerOn.checked ? val('links.header') : '', sg = sigOn.checked ? val('links.signature') : '';
     if(h) out = h + '\n' + out;
     if(sg) out = out + '\n\nSignature: ' + sg;
     return out;
