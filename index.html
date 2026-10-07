@@ -226,6 +226,9 @@
   }
   .copy-note{ font-size:0.75rem; color: var(--ink-soft); margin-top:6px; min-height: 1em; }
 
+  .report-tabs{ display:flex; flex-wrap:wrap; gap:8px; margin: 0 0 14px; }
+  .report-tab{ font-family:'Inter'; font-size:0.82rem; font-weight:600; padding:9px 16px; border-radius:5px; border:1.5px solid var(--ink); background:#fff; color:var(--ink); cursor:pointer; }
+  .report-tab.active{ background:var(--ink); color:#fff; }
   .report-panel{ display:none; }
   .report-panel.active{ display:block; }
 
@@ -276,10 +279,20 @@
     <div class="style-preview" id="stylePreview"></div>
   </div>
 
+  <div class="report-tabs" id="reportTabs">
+    <button type="button" class="report-tab active" data-report="incident">Incident</button>
+    <button type="button" class="report-tab" data-report="arrest">Arrest</button>
+    <button type="button" class="report-tab" data-report="hostage">Hostage</button>
+    <button type="button" class="report-tab" data-report="traffic">Traffic Ticket</button>
+    <button type="button" class="report-tab" data-report="warrant">Warrant</button>
+    <button type="button" class="report-tab" data-report="impound">Impound</button>
+    <button type="button" class="report-tab" data-report="vincrush">VIN Crush</button>
+  </div>
+
   <div class="card" id="card">
 
     <!-- ================= INCIDENT ================= -->
-    <div class="report-panel active" data-panel="incident">
+    <div class="report-panel" data-panel="incident">
       <div class="banner" data-banner>
         <div class="glyphline" data-glyph-top></div>
         <h2>Incident Report</h2>
@@ -303,23 +316,7 @@
 
       <div class="section">
         <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Add Details</span><span class="corner-glyph"></span><span class="st-line"></span></div>
-        <div class="sub-caption">Click to enable only the sections that apply to this incident.</div>
-
-        <!-- Hostage -->
-        <div class="toggle-row">
-          <button type="button" class="ghost-btn" id="incidentHostageToggle">+ Hostage involved</button>
-        </div>
-        <div class="toggle-body" id="incidentHostageWrap" style="display:none;">
-          <div class="grid">
-            <div class="field"><label>Hostage Name</label><input type="text" data-f="incident.hostageName" placeholder="Name"></div>
-            <div class="field"><label>Taken From?</label><input type="text" data-f="incident.hostageTakenFrom" placeholder="Location"></div>
-            <div class="field"><label>Injured?</label><select data-f="incident.hostageInjured"><option>No</option><option>Yes</option></select></div>
-            <div class="field"><label>Food and Water?</label><select data-f="incident.hostageFoodWater"><option>Yes</option><option>No</option><option>Given by Hostage Takers</option></select></div>
-            <div class="field"><label>Stolen Items?</label><select data-f="incident.hostageStolen"><option>No</option><option>Yes</option></select></div>
-            <div class="field"><label>Planted Items?</label><select data-f="incident.hostagePlanted"><option>No</option><option>Yes</option></select></div>
-            <div class="field"><label>Given Ride?</label><select data-f="incident.hostageRide"><option>No</option><option>Yes</option></select></div>
-          </div>
-        </div>
+        <div class="sub-caption">Click to add the details that apply to this incident. Arrest, hostage, traffic, warrant, impound and VIN crush each have their own report tab.</div>
 
         <!-- Cars involved -->
         <div class="toggle-row">
@@ -329,12 +326,20 @@
           <label>Plate / Description (one per line)</label>
           <textarea data-f="incident.vehicles" rows="3" placeholder="e.g. ABC123 &#8211; Red Sultan"></textarea>
         </div>
+      </div>
+    </div>
 
-        <!-- Arrest -->
-        <div class="toggle-row">
-          <button type="button" class="ghost-btn" id="arrestToggle">+ Arrest</button>
-        </div>
-        <div class="toggle-body" id="arrestWrap" style="display:none;">
+
+    <!-- ================= ARREST ================= -->
+    <div class="report-panel" data-panel="arrest">
+      <div class="banner" data-banner>
+        <div class="glyphline" data-glyph-top></div>
+        <h2>Arrest Report</h2>
+        <div class="sub" data-glyph-bottom></div>
+      </div>
+      <div class="section">
+        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Arrest Details</span><span class="corner-glyph"></span><span class="st-line"></span></div>
+
           <div class="grid">
             <div class="field">
               <label>Situation</label>
@@ -384,15 +389,13 @@
             <div class="field"><label>Transported to Bolingbroke by</label><select data-f="arrest.transport"><option>Local Guards</option><option>DOC</option></select></div>
           </div>
 
-          <div class="grid" style="margin-top:12px;">
-            <div class="field"><label>SAO</label><input type="text" data-f="arrest.sao"></div>
-            <div class="field"><label>Time</label><input type="text" data-f="arrest.pleaTime"></div>
-            <div class="field"><label>Fine ($)</label><input type="text" data-f="arrest.fine"></div>
-          </div>
           <div class="checkbox-row">
             <label class="checkbox-label"><input type="checkbox" id="arrestLawyerCheck"> Had a Lawyer</label>
           </div>
           <div class="grid" id="arrestLawyerWrap" style="display:none;">
+            <div class="field"><label>SAO</label><input type="text" data-f="arrest.sao"></div>
+            <div class="field"><label>Time</label><input type="text" data-f="arrest.pleaTime"></div>
+            <div class="field"><label>Fine ($)</label><input type="text" data-f="arrest.fine"></div>
             <div class="field"><label>Lawyer Name</label><input type="text" data-f="arrest.lawyer"></div>
             <div class="field"><label>Reduction (%)</label><input type="text" data-f="arrest.reduction" placeholder="e.g. 20"></div>
           </div>
@@ -401,13 +404,43 @@
             <label>Items Confiscated</label>
             <textarea data-f="arrest.evidence" rows="3" placeholder="One item per line..."></textarea>
           </div>
-        </div>
+        
+      </div>
+    </div>
 
-        <!-- Traffic Ticket -->
-        <div class="toggle-row">
-          <button type="button" class="ghost-btn" id="trafficToggle">+ Traffic Ticket</button>
-        </div>
-        <div class="toggle-body" id="trafficWrap" style="display:none;">
+    <!-- ================= HOSTAGE ================= -->
+    <div class="report-panel" data-panel="hostage">
+      <div class="banner" data-banner>
+        <div class="glyphline" data-glyph-top></div>
+        <h2>Hostage Report</h2>
+        <div class="sub" data-glyph-bottom></div>
+      </div>
+      <div class="section">
+        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Hostage Details</span><span class="corner-glyph"></span><span class="st-line"></span></div>
+
+          <div class="grid">
+            <div class="field"><label>Hostage Name</label><input type="text" data-f="incident.hostageName" placeholder="Name"></div>
+            <div class="field"><label>Taken From?</label><input type="text" data-f="incident.hostageTakenFrom" placeholder="Location"></div>
+            <div class="field"><label>Injured?</label><select data-f="incident.hostageInjured"><option>No</option><option>Yes</option></select></div>
+            <div class="field"><label>Food and Water?</label><select data-f="incident.hostageFoodWater"><option>Yes</option><option>No</option><option>Given by Hostage Takers</option></select></div>
+            <div class="field"><label>Stolen Items?</label><select data-f="incident.hostageStolen"><option>No</option><option>Yes</option></select></div>
+            <div class="field"><label>Planted Items?</label><select data-f="incident.hostagePlanted"><option>No</option><option>Yes</option></select></div>
+            <div class="field"><label>Given Ride?</label><select data-f="incident.hostageRide"><option>No</option><option>Yes</option></select></div>
+          </div>
+        
+      </div>
+    </div>
+
+    <!-- ================= TRAFFIC ================= -->
+    <div class="report-panel" data-panel="traffic">
+      <div class="banner" data-banner>
+        <div class="glyphline" data-glyph-top></div>
+        <h2>Traffic Ticket</h2>
+        <div class="sub" data-glyph-bottom></div>
+      </div>
+      <div class="section">
+        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Traffic Ticket Details</span><span class="corner-glyph"></span><span class="st-line"></span></div>
+
           <div class="grid">
             <div class="field"><label>Make/Model or Type</label><input type="text" data-f="traffic.makeModel"></div>
             <div class="field"><label>Colour</label><input type="text" data-f="traffic.colour"></div>
@@ -433,13 +466,20 @@
           <div class="grid" style="margin-top:12px;">
             <div class="field"><label>Fine ($)</label><input type="text" data-f="traffic.fine"></div>
           </div>
-        </div>
+        
+      </div>
+    </div>
 
-        <!-- Warrant -->
-        <div class="toggle-row">
-          <button type="button" class="ghost-btn" id="warrantToggle">+ Warrant</button>
-        </div>
-        <div class="toggle-body" id="warrantWrap" style="display:none;">
+    <!-- ================= WARRANT ================= -->
+    <div class="report-panel" data-panel="warrant">
+      <div class="banner" data-banner>
+        <div class="glyphline" data-glyph-top></div>
+        <h2>Warrant Report</h2>
+        <div class="sub" data-glyph-bottom></div>
+      </div>
+      <div class="section">
+        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Warrant Details</span><span class="corner-glyph"></span><span class="st-line"></span></div>
+
           <div class="pillgroup">
             <button type="button" class="pill active" data-approver="sasp">SASP Supervisor</button>
             <button type="button" class="pill" data-approver="sao">SAO</button>
@@ -462,13 +502,20 @@
             <label>Charge List</label>
             <textarea data-f="warrant.charges" rows="3" placeholder="One charge per line..."></textarea>
           </div>
-        </div>
+        
+      </div>
+    </div>
 
-        <!-- Impound -->
-        <div class="toggle-row">
-          <button type="button" class="ghost-btn" id="impoundToggle">+ Impound</button>
-        </div>
-        <div class="toggle-body" id="impoundWrap" style="display:none;">
+    <!-- ================= IMPOUND ================= -->
+    <div class="report-panel" data-panel="impound">
+      <div class="banner" data-banner>
+        <div class="glyphline" data-glyph-top></div>
+        <h2>State Impound Report</h2>
+        <div class="sub" data-glyph-bottom></div>
+      </div>
+      <div class="section">
+        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Impound Details</span><span class="corner-glyph"></span><span class="st-line"></span></div>
+
           <div class="grid">
             <div class="field"><label>Original Scenario</label><input type="text" data-f="impound.scenario"></div>
             <div class="field"><label>Model</label><input type="text" data-f="impound.model"></div>
@@ -480,13 +527,20 @@
           <div class="checkbox-row">
             <label class="checkbox-label"><input type="checkbox" id="impoundStrike"> Striked</label>
           </div>
-        </div>
+        
+      </div>
+    </div>
 
-        <!-- VIN Crush -->
-        <div class="toggle-row">
-          <button type="button" class="ghost-btn" id="vincrushToggle">+ VIN Crush</button>
-        </div>
-        <div class="toggle-body" id="vincrushWrap" style="display:none;">
+    <!-- ================= VINCRUSH ================= -->
+    <div class="report-panel" data-panel="vincrush">
+      <div class="banner" data-banner>
+        <div class="glyphline" data-glyph-top></div>
+        <h2>VIN Crush Report</h2>
+        <div class="sub" data-glyph-bottom></div>
+      </div>
+      <div class="section">
+        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">VIN Crush Details</span><span class="corner-glyph"></span><span class="st-line"></span></div>
+
           <div class="grid">
             <div class="field"><label>Make/Model</label><input type="text" data-f="vincrush.makeModel"></div>
             <div class="field"><label>Color</label><input type="text" data-f="vincrush.color"></div>
@@ -510,34 +564,17 @@
             <label>Crush Outcome</label>
             <textarea data-f="vincrush.outcome" rows="2" placeholder="Vehicle was taken to the crush spot and was crushed."></textarea>
           </div>
-        </div>
+        
       </div>
     </div>
 
-    <!-- ================= SIGNATURE (shared) ================= -->
+    <!-- ================= LINKS (shared) ================= -->
     <div class="section">
-      <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Signature</span><span class="corner-glyph"></span><span class="st-line"></span></div>
-      <div class="sig-wrap">
-        <div>
-          <canvas class="sigpad" id="sigpad" width="320" height="110"></canvas>
-          <div class="sig-caption">Draw with mouse/finger, or upload an image. Saved on this device automatically.</div>
-        </div>
-        <div class="sig-actions">
-          <label class="upload-btn" for="sigUpload">Upload signature image</label>
-          <input type="file" id="sigUpload" accept="image/*" style="display:none">
-          <button type="button" class="btn secondary" id="copySig">Copy image</button>
-          <button type="button" class="btn secondary" id="clearSig">Clear signature</button>
-          <div class="sig-status" id="sigStatus"></div>
-        </div>
-      </div>
-
-      <div class="preset-sig-block">
-        <div class="preset-sig-label">Fiona Snow — signature</div>
-        <img src="data:image/png;base64,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" alt="Fiona Snow signature" class="preset-sig-img" id="fionaSigImg">
-        <div class="preset-sig-actions">
-          <button type="button" class="btn secondary" id="copyFionaSig">Copy image</button>
-          <div class="sig-status" id="fionaSigNote"></div>
-        </div>
+      <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Header &amp; Signature Links</span><span class="corner-glyph"></span><span class="st-line"></span></div>
+      <div class="sub-caption"><strong>Note:</strong> both links should be <strong>FiveManage</strong> links.</div>
+      <div class="grid">
+        <div class="field"><label>Header Link</label><input type="text" data-f="links.header" placeholder="FiveManage link"></div>
+        <div class="field"><label>Signature Link</label><input type="text" data-f="links.signature" placeholder="FiveManage link"></div>
       </div>
     </div>
 
@@ -556,7 +593,7 @@
   </div>
 </div>
 
-<footer>Officer, badge number, divider style, and signature are all remembered on this device unless you clear your browser cache.</footer>
+<footer>Officer, badge number, divider style, and header/signature links are all remembered on this device unless you clear your browser cache.</footer>
 
 <div id="printArea"></div>
 
@@ -654,30 +691,17 @@
   }
 
   /* ---------------- incident report: optional hostage / vehicles ---------------- */
-  var incidentHostageActive = storage.get('incidentHostageActive') === '1';
   var incidentVehicleActive = storage.get('incidentVehicleActive') === '1';
-  var incidentHostageToggle = document.getElementById('incidentHostageToggle');
-  var incidentHostageWrap = document.getElementById('incidentHostageWrap');
   var incidentVehicleToggle = document.getElementById('incidentVehicleToggle');
   var incidentVehicleWrap = document.getElementById('incidentVehicleWrap');
 
   function refreshIncidentToggles(){
-    incidentHostageWrap.style.display = incidentHostageActive ? 'block' : 'none';
-    incidentHostageToggle.classList.toggle('active', incidentHostageActive);
-    incidentHostageToggle.textContent = incidentHostageActive ? '− Hostage involved' : '+ Hostage involved';
-
     incidentVehicleWrap.style.display = incidentVehicleActive ? 'block' : 'none';
     incidentVehicleToggle.classList.toggle('active', incidentVehicleActive);
     incidentVehicleToggle.textContent = incidentVehicleActive ? '− Cars involved' : '+ Cars involved';
   }
   refreshIncidentToggles();
 
-  incidentHostageToggle.addEventListener('click', function(){
-    incidentHostageActive = !incidentHostageActive;
-    storage.set('incidentHostageActive', incidentHostageActive ? '1' : '0');
-    refreshIncidentToggles();
-    if(incidentHostageActive){ document.querySelector('[data-f="incident.hostageName"]').focus(); }
-  });
   incidentVehicleToggle.addEventListener('click', function(){
     incidentVehicleActive = !incidentVehicleActive;
     storage.set('incidentVehicleActive', incidentVehicleActive ? '1' : '0');
@@ -719,11 +743,6 @@
     return state;
   }
 
-  var arrestState = setupSectionToggle('arrestToggle', 'arrestWrap', 'arrestActive');
-  var trafficState = setupSectionToggle('trafficToggle', 'trafficWrap', 'trafficActive');
-  var warrantState = setupSectionToggle('warrantToggle', 'warrantWrap', 'warrantActive');
-  var impoundState = setupSectionToggle('impoundToggle', 'impoundWrap', 'impoundActive');
-  var vincrushState = setupSectionToggle('vincrushToggle', 'vincrushWrap', 'vincrushActive');
 
   /* ---------------- divider style settings ---------------- */
   var CORNERS = ['✦','◆','★','☆','❖','▸','➤','§','♛','☙','❧','♱','⚖','✿','❀','⚔','┊','⫽','〢','▪',''];
@@ -904,136 +923,6 @@
     situationInput.focus();
   });
 
-  /* ---------------- signature pad (draw + upload + persist) ---------------- */
-  var canvas = document.getElementById('sigpad');
-  var ctx = canvas.getContext('2d');
-  ctx.lineWidth = 2;
-  ctx.lineCap = 'round';
-  ctx.strokeStyle = '#2B2A28';
-  var drawing = false, hasSignature = false;
-  var sigStatus = document.getElementById('sigStatus');
-
-  function saveSignature(){
-    try {
-      var data = canvas.toDataURL('image/png');
-      var ok = storage.set('signatureData', data);
-      sigStatus.textContent = ok ? 'Signature saved.' : 'Saved for this session only (too large to store permanently).';
-    } catch(e){
-      sigStatus.textContent = 'Could not save signature.';
-    }
-  }
-
-  function loadSignature(){
-    var data = storage.get('signatureData');
-    if(!data) return;
-    var img = new Image();
-    img.onload = function(){
-      ctx.clearRect(0,0,canvas.width, canvas.height);
-      // fit image inside canvas, preserving aspect ratio
-      var scale = Math.min(canvas.width / img.width, canvas.height / img.height);
-      var w = img.width * scale, h = img.height * scale;
-      var x = (canvas.width - w) / 2, y = (canvas.height - h) / 2;
-      ctx.drawImage(img, x, y, w, h);
-      hasSignature = true;
-    };
-    img.src = data;
-  }
-  loadSignature();
-
-  function pos(e){
-    var rect = canvas.getBoundingClientRect();
-    var x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
-    var y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
-    return { x: x, y: y };
-  }
-  function start(e){ drawing = true; hasSignature = true; var p = pos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); e.preventDefault(); }
-  function move(e){ if(!drawing) return; var p = pos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); e.preventDefault(); }
-  function end(){ if(drawing){ drawing = false; saveSignature(); } }
-
-  canvas.addEventListener('mousedown', start);
-  canvas.addEventListener('mousemove', move);
-  window.addEventListener('mouseup', end);
-  canvas.addEventListener('touchstart', start);
-  canvas.addEventListener('touchmove', move);
-  canvas.addEventListener('touchend', end);
-
-  document.getElementById('clearSig').addEventListener('click', function(){
-    ctx.clearRect(0,0,canvas.width, canvas.height);
-    hasSignature = false;
-    storage.remove('signatureData');
-    sigStatus.textContent = 'Signature cleared.';
-  });
-
-  document.getElementById('copySig').addEventListener('click', function(){
-    if(!hasSignature){
-      sigStatus.textContent = 'Draw or upload a signature first.';
-      return;
-    }
-    if(navigator.clipboard && window.ClipboardItem && canvas.toBlob){
-      canvas.toBlob(function(blob){
-        if(!blob){
-          sigStatus.textContent = 'Could not copy automatically — right-click the signature and choose "Copy image".';
-          return;
-        }
-        navigator.clipboard.write([ new ClipboardItem({ 'image/png': blob }) ])
-          .then(function(){ sigStatus.textContent = 'Copied to clipboard.'; })
-          .catch(function(){ sigStatus.textContent = 'Could not copy automatically — right-click the signature and choose "Copy image".'; });
-      }, 'image/png');
-    } else {
-      sigStatus.textContent = 'Right-click the signature and choose "Copy image".';
-    }
-  });
-
-  document.getElementById('sigUpload').addEventListener('change', function(e){
-    var file = e.target.files && e.target.files[0];
-    if(!file) return;
-    var reader = new FileReader();
-    reader.onload = function(evt){
-      var img = new Image();
-      img.onload = function(){
-        ctx.clearRect(0,0,canvas.width, canvas.height);
-        var scale = Math.min(canvas.width / img.width, canvas.height / img.height);
-        var w = img.width * scale, h = img.height * scale;
-        var x = (canvas.width - w) / 2, y = (canvas.height - h) / 2;
-        ctx.drawImage(img, x, y, w, h);
-        hasSignature = true;
-        saveSignature();
-      };
-      img.src = evt.target.result;
-    };
-    reader.readAsDataURL(file);
-  });
-
-  /* ---------------- preset signature (Fiona Snow) — copy as image ---------------- */
-  function dataUriToBlob(dataUri){
-    var parts = dataUri.split(',');
-    var mimeMatch = parts[0].match(/:(.*?);/);
-    var mime = mimeMatch ? mimeMatch[1] : 'image/png';
-    var binary = atob(parts[1]);
-    var arr = new Uint8Array(binary.length);
-    for(var i = 0; i < binary.length; i++){ arr[i] = binary.charCodeAt(i); }
-    return new Blob([arr], { type: mime });
-  }
-  var copyFionaSigBtn = document.getElementById('copyFionaSig');
-  var fionaSigNote = document.getElementById('fionaSigNote');
-  var fionaSigImg = document.getElementById('fionaSigImg');
-  if(copyFionaSigBtn){
-    copyFionaSigBtn.addEventListener('click', function(){
-      if(navigator.clipboard && window.ClipboardItem){
-        try{
-          var blob = dataUriToBlob(fionaSigImg.src);
-          navigator.clipboard.write([ new ClipboardItem({ 'image/png': blob }) ])
-            .then(function(){ fionaSigNote.textContent = 'Copied to clipboard.'; })
-            .catch(function(){ fionaSigNote.textContent = 'Could not copy automatically — right-click the image and choose "Copy image".'; });
-        } catch(err){
-          fionaSigNote.textContent = 'Could not copy automatically — right-click the image and choose "Copy image".';
-        }
-      } else {
-        fionaSigNote.textContent = 'Right-click the image and choose "Copy image".';
-      }
-    });
-  }
-
   /* ---------------- template builders ---------------- */
   function buildIncident(){
     var o = officerLine();
@@ -1050,18 +939,7 @@
       dash(val('incident.statement') || '[Insert Summary Here]')
     ];
 
-    if(incidentHostageActive){
-      lines.push('');
-      lines.push(headerLine(style.sc, style.sl, style.len, 'Hostage Information'));
-      lines.push('');
-      lines.push('*  HOSTAGE: ' + dash(val('incident.hostageName')));
-      lines.push('* Taken From? ' + dash(val('incident.hostageTakenFrom')));
-      lines.push('* Injured? ' + val('incident.hostageInjured'));
-      lines.push('* Food and Water? ' + val('incident.hostageFoodWater'));
-      lines.push('* Stolen Items? ' + val('incident.hostageStolen'));
-      lines.push('* Planted Items? ' + val('incident.hostagePlanted'));
-      lines.push('* Given Ride? ' + val('incident.hostageRide'));
-    }
+    
 
     if(incidentVehicleActive){
       var vehicles = linesFrom(val('incident.vehicles'));
@@ -1070,7 +948,29 @@
       lines = lines.concat(vehicles.length ? vehicles : ['XXX']);
     }
 
-    if(arrestState.active){
+    
+
+    
+
+    
+
+    
+
+    
+
+    return lines.filter(function(l){ return l !== undefined; }).join('\n');
+  }
+
+
+  function build_arrest(){
+    var o = officerLine();
+    var lines = [
+      headerLine(style.bc, style.bl, style.len, 'Arrest Report'),
+      '',
+      '*  OFFICER: ' + o,
+      ftoValue() ? ('*  SUPERVISING FTO: ' + ftoValue()) : undefined
+    ];
+
       var fp = val('arrest.fingerprintsMode') === 'filedby' ? ('Filed by ' + dash(val('arrest.fingerprintsBy'))) : 'Already Filed';
       lines.push('');
       lines.push(headerLine(style.sc, style.sl, style.len, 'Arrest Information'));
@@ -1105,9 +1005,42 @@
       lines.push(headerLine(style.sc, style.sl, style.len, 'Evidence Information'));
       lines.push('Items Confiscated:');
       lines.push(linesFrom(val('arrest.evidence')).join('\n'));
-    }
+    
+    return lines.filter(function(l){ return l !== undefined; }).join('\n');
+  }
 
-    if(trafficState.active){
+  function build_hostage(){
+    var o = officerLine();
+    var lines = [
+      headerLine(style.bc, style.bl, style.len, 'Hostage Report'),
+      '',
+      '*  OFFICER: ' + o,
+      ftoValue() ? ('*  SUPERVISING FTO: ' + ftoValue()) : undefined
+    ];
+
+      lines.push('');
+      lines.push(headerLine(style.sc, style.sl, style.len, 'Hostage Information'));
+      lines.push('');
+      lines.push('*  HOSTAGE: ' + dash(val('incident.hostageName')));
+      lines.push('* Taken From? ' + dash(val('incident.hostageTakenFrom')));
+      lines.push('* Injured? ' + val('incident.hostageInjured'));
+      lines.push('* Food and Water? ' + val('incident.hostageFoodWater'));
+      lines.push('* Stolen Items? ' + val('incident.hostageStolen'));
+      lines.push('* Planted Items? ' + val('incident.hostagePlanted'));
+      lines.push('* Given Ride? ' + val('incident.hostageRide'));
+    
+    return lines.filter(function(l){ return l !== undefined; }).join('\n');
+  }
+
+  function build_traffic(){
+    var o = officerLine();
+    var lines = [
+      headerLine(style.bc, style.bl, style.len, 'Traffic Ticket'),
+      '',
+      '*  OFFICER: ' + o,
+      ftoValue() ? ('*  SUPERVISING FTO: ' + ftoValue()) : undefined
+    ];
+
       lines.push('');
       lines.push(headerLine(style.sc, style.sl, style.len, 'Traffic Ticket'));
       lines.push('');
@@ -1121,9 +1054,19 @@
       lines.push('* Driver Information: ' + dash(val('traffic.driverInfo')));
       lines.push('* Citation/Charge: ' + (linesFrom(val('traffic.citation')).join(', ') || 'XXX'));
       lines.push('* Fine: $' + (val('traffic.fine') || '0'));
-    }
+    
+    return lines.filter(function(l){ return l !== undefined; }).join('\n');
+  }
 
-    if(warrantState.active){
+  function build_warrant(){
+    var o = officerLine();
+    var lines = [
+      headerLine(style.bc, style.bl, style.len, 'Warrant Report'),
+      '',
+      '*  OFFICER: ' + o,
+      ftoValue() ? ('*  SUPERVISING FTO: ' + ftoValue()) : undefined
+    ];
+
       var usesSasp = document.querySelector('[data-approver="sasp"]').classList.contains('active');
       lines.push('');
       lines.push(headerLine(style.sc, style.sl, style.len, 'Warrant Approval'));
@@ -1143,9 +1086,19 @@
       lines.push(headerLine(style.sc, style.sl, style.len, 'Charge List'));
       var charges = linesFrom(val('warrant.charges'));
       lines = lines.concat(charges.length ? charges : ['XXX']);
-    }
+    
+    return lines.filter(function(l){ return l !== undefined; }).join('\n');
+  }
 
-    if(impoundState.active){
+  function build_impound(){
+    var o = officerLine();
+    var lines = [
+      headerLine(style.bc, style.bl, style.len, 'State Impound Report'),
+      '',
+      '*  OFFICER: ' + o,
+      ftoValue() ? ('*  SUPERVISING FTO: ' + ftoValue()) : undefined
+    ];
+
       lines.push('');
       lines.push(headerLine(style.sc, style.sl, style.len, 'Impound Information'));
       lines.push('');
@@ -1157,9 +1110,19 @@
       lines.push('* IMPOUNDED: ' + fmtEST(impoundedAt));
       lines.push('* UNIMPOUND TIME: ' + dur + ' (' + fmtEST(impoundRelease(dur, impoundedAt)) + ')');
       lines.push('* STRIKED: ' + (document.getElementById('impoundStrike').checked ? '[X] Yes  [ ] No' : '[ ] Yes  [X] No'));
-    }
+    
+    return lines.filter(function(l){ return l !== undefined; }).join('\n');
+  }
 
-    if(vincrushState.active){
+  function build_vincrush(){
+    var o = officerLine();
+    var lines = [
+      headerLine(style.bc, style.bl, style.len, 'VIN Crush Report'),
+      '',
+      '*  OFFICER: ' + o,
+      ftoValue() ? ('*  SUPERVISING FTO: ' + ftoValue()) : undefined
+    ];
+
       var authDate = fmtDateOnly(val('vincrush.authDate'));
       var crushDate = fmtDateOnly(val('vincrush.crushDate'));
       var authorizedBy = linesFrom(val('vincrush.authBy')).join(', ') || 'XXX';
@@ -1177,24 +1140,45 @@
       lines.push('* Personnel: ' + dash(val('vincrush.personnel')));
       lines.push('* Crush Date: ' + crushDate);
       lines.push('* Crush Outcome: ' + dash(val('vincrush.outcome')));
-    }
-
+    
     return lines.filter(function(l){ return l !== undefined; }).join('\n');
   }
 
-  var builders = { incident: buildIncident };
-  var titles = { incident: 'Incident Report' };
-  var currentReport = 'incident';
+  function buildReport(){
+    var out = builders[currentReport]();
+    var h = val('links.header'), sg = val('links.signature');
+    if(h) out = h + '\n' + out;
+    if(sg) out = out + '\n\nSignature: ' + sg;
+    return out;
+  }
+
+  var builders = { incident: buildIncident, arrest: build_arrest, hostage: build_hostage, traffic: build_traffic, warrant: build_warrant, impound: build_impound, vincrush: build_vincrush };
+  var titles = { incident: 'Incident Report', arrest: 'Arrest Report', hostage: 'Hostage Report', traffic: 'Traffic Ticket', warrant: 'Warrant Report', impound: 'State Impound Report', vincrush: 'VIN Crush Report' };
+  var currentReport = storage.get('currentReport');
+  if(!builders[currentReport]) currentReport = 'incident';
+  function showReport(key){
+    currentReport = key;
+    storage.set('currentReport', key);
+    document.querySelectorAll('.report-panel').forEach(function(pn){ pn.classList.toggle('active', pn.dataset.panel === key); });
+    document.querySelectorAll('.report-tab').forEach(function(t){ t.classList.toggle('active', t.dataset.report === key); });
+    lastOutput = '';
+    document.getElementById('outputBox').textContent = 'Fill in the fields above, then click \u201cGenerate report\u201d.';
+    document.getElementById('copyNote').textContent = '';
+  }
+  document.querySelectorAll('.report-tab').forEach(function(t){
+    t.addEventListener('click', function(){ showReport(t.dataset.report); });
+  });
   var lastOutput = '';
+  showReport(currentReport);
 
   document.getElementById('generateBtn').addEventListener('click', function(){
-    lastOutput = builders[currentReport]();
+    lastOutput = buildReport();
     document.getElementById('outputBox').textContent = lastOutput;
     document.getElementById('copyNote').textContent = '';
   });
 
   document.getElementById('copyBtn').addEventListener('click', function(){
-    if(!lastOutput){ lastOutput = builders[currentReport](); document.getElementById('outputBox').textContent = lastOutput; }
+    if(!lastOutput){ lastOutput = buildReport(); document.getElementById('outputBox').textContent = lastOutput; }
     var note = document.getElementById('copyNote');
     if(navigator.clipboard && navigator.clipboard.writeText){
       navigator.clipboard.writeText(lastOutput).then(function(){ note.textContent = 'Copied to clipboard.'; })
@@ -1205,7 +1189,7 @@
   });
 
   document.getElementById('downloadBtn').addEventListener('click', function(){
-    if(!lastOutput){ lastOutput = builders[currentReport](); document.getElementById('outputBox').textContent = lastOutput; }
+    if(!lastOutput){ lastOutput = buildReport(); document.getElementById('outputBox').textContent = lastOutput; }
     var blob = new Blob([lastOutput], { type: 'text/plain' });
     var a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
@@ -1216,10 +1200,9 @@
   });
 
   document.getElementById('printBtn').addEventListener('click', function(){
-    if(!lastOutput){ lastOutput = builders[currentReport](); document.getElementById('outputBox').textContent = lastOutput; }
+    if(!lastOutput){ lastOutput = buildReport(); document.getElementById('outputBox').textContent = lastOutput; }
     var accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
     var accentDeep = getComputedStyle(document.documentElement).getPropertyValue('--accent-deep').trim();
-    var sigData = hasSignature ? canvas.toDataURL('image/png') : '';
     var printArea = document.getElementById('printArea');
     printArea.innerHTML =
       '<div style="font-family:Inter,sans-serif; max-width:700px; margin:30px auto;">' +
@@ -1229,7 +1212,6 @@
         '<pre style="white-space:pre-wrap; font-family:JetBrains Mono, monospace; font-size:0.85rem; line-height:1.6; margin-top:20px;">' +
           lastOutput.replace(/&/g,'&amp;').replace(/</g,'&lt;') +
         '</pre>' +
-        (sigData ? ('<div style="margin-top:26px;"><div style="font-size:0.75rem; color:#666; margin-bottom:6px;">Signature:</div><img src="' + sigData + '" style="height:70px;"></div>') : '') +
       '</div>';
     window.print();
   });
