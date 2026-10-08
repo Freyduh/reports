@@ -221,7 +221,7 @@
   .output-wrap{ padding: 8px 26px 24px; }
   pre#outputBox{
     font-family:'JetBrains Mono', monospace; font-size: 0.82rem; line-height:1.6;
-    white-space: pre-wrap; word-break: break-word; background: var(--ink); color: #F3EFE9;
+    white-space: pre-wrap; word-break: break-word; background: #fff; color: #1a1a1a; border: 1.5px solid var(--ink);
     padding: 20px; border-radius: 6px; min-height: 60px;
   }
   .copy-note{ font-size:0.75rem; color: var(--ink-soft); margin-top:6px; min-height: 1em; }
@@ -390,12 +390,15 @@
           </div>
 
           <div class="checkbox-row">
-            <label class="checkbox-label"><input type="checkbox" id="arrestLawyerCheck"> Had a Lawyer</label>
+            <label class="checkbox-label"><input type="checkbox" id="arrestSaoCheck"> SAO Involved</label>
+            <label class="checkbox-label"><input type="checkbox" id="arrestLawyerCheck"> Lawyer Involved</label>
           </div>
-          <div class="grid" id="arrestLawyerWrap" style="display:none;">
+          <div class="grid" id="arrestSaoWrap" style="display:none;">
             <div class="field"><label>SAO</label><input type="text" data-f="arrest.sao"></div>
             <div class="field"><label>Time</label><input type="text" data-f="arrest.pleaTime"></div>
             <div class="field"><label>Fine ($)</label><input type="text" data-f="arrest.fine"></div>
+          </div>
+          <div class="grid" id="arrestLawyerWrap" style="display:none;">
             <div class="field"><label>Lawyer Name</label><input type="text" data-f="arrest.lawyer"></div>
             <div class="field"><label>Reduction (%)</label><input type="text" data-f="arrest.reduction" placeholder="e.g. 20"></div>
           </div>
@@ -405,6 +408,12 @@
             <textarea data-f="arrest.evidence" rows="3" placeholder="One item per line..."></textarea>
           </div>
         
+      </div>
+    
+      <div class="section">
+        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Summary</span><span class="corner-glyph"></span><span class="st-line"></span></div>
+        <label>Summary</label>
+        <textarea data-f="arrest.summary" rows="5" placeholder="Insert summary here..."></textarea>
       </div>
     </div>
 
@@ -428,6 +437,12 @@
             <div class="field"><label>Given Ride?</label><select data-f="incident.hostageRide"><option>No</option><option>Yes</option></select></div>
           </div>
         
+      </div>
+    
+      <div class="section">
+        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Summary</span><span class="corner-glyph"></span><span class="st-line"></span></div>
+        <label>Summary</label>
+        <textarea data-f="hostage.summary" rows="5" placeholder="Insert summary here..."></textarea>
       </div>
     </div>
 
@@ -468,6 +483,12 @@
           </div>
         
       </div>
+    
+      <div class="section">
+        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Summary</span><span class="corner-glyph"></span><span class="st-line"></span></div>
+        <label>Summary</label>
+        <textarea data-f="traffic.summary" rows="5" placeholder="Insert summary here..."></textarea>
+      </div>
     </div>
 
     <!-- ================= WARRANT ================= -->
@@ -504,6 +525,12 @@
           </div>
         
       </div>
+    
+      <div class="section">
+        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Summary</span><span class="corner-glyph"></span><span class="st-line"></span></div>
+        <label>Summary</label>
+        <textarea data-f="warrant.summary" rows="5" placeholder="Insert summary here..."></textarea>
+      </div>
     </div>
 
     <!-- ================= IMPOUND ================= -->
@@ -528,6 +555,12 @@
             <label class="checkbox-label"><input type="checkbox" id="impoundStrike"> Striked</label>
           </div>
         
+      </div>
+    
+      <div class="section">
+        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Summary</span><span class="corner-glyph"></span><span class="st-line"></span></div>
+        <label>Summary</label>
+        <textarea data-f="impound.summary" rows="5" placeholder="Insert summary here..."></textarea>
       </div>
     </div>
 
@@ -565,6 +598,12 @@
             <textarea data-f="vincrush.outcome" rows="2" placeholder="Vehicle was taken to the crush spot and was crushed."></textarea>
           </div>
         
+      </div>
+    
+      <div class="section">
+        <div class="section-title"><span class="st-line"></span><span class="corner-glyph"></span><span class="st-text">Summary</span><span class="corner-glyph"></span><span class="st-line"></span></div>
+        <label>Summary</label>
+        <textarea data-f="vincrush.summary" rows="5" placeholder="Insert summary here..."></textarea>
       </div>
     </div>
 
@@ -715,17 +754,26 @@
     if(incidentVehicleActive){ document.querySelector('[data-f="incident.vehicles"]').focus(); }
   });
 
-  /* ---------------- arrest report: had a lawyer? ---------------- */
+  /* ---------------- arrest report: SAO / lawyer involved? ---------------- */
+  var arrestSaoCheck = document.getElementById('arrestSaoCheck');
+  var arrestSaoWrap = document.getElementById('arrestSaoWrap');
   var arrestLawyerCheck = document.getElementById('arrestLawyerCheck');
   var arrestLawyerWrap = document.getElementById('arrestLawyerWrap');
+  arrestSaoCheck.checked = storage.get('arrestSaoCheck') === '1';
   arrestLawyerCheck.checked = storage.get('arrestLawyerCheck') === '1';
-  function refreshArrestLawyer(){
+  function refreshArrestPlea(){
+    arrestSaoWrap.style.display = arrestSaoCheck.checked ? 'grid' : 'none';
     arrestLawyerWrap.style.display = arrestLawyerCheck.checked ? 'grid' : 'none';
   }
-  refreshArrestLawyer();
+  refreshArrestPlea();
+  arrestSaoCheck.addEventListener('change', function(){
+    storage.set('arrestSaoCheck', arrestSaoCheck.checked ? '1' : '0');
+    refreshArrestPlea();
+    if(arrestSaoCheck.checked){ document.querySelector('[data-f="arrest.sao"]').focus(); }
+  });
   arrestLawyerCheck.addEventListener('change', function(){
     storage.set('arrestLawyerCheck', arrestLawyerCheck.checked ? '1' : '0');
-    refreshArrestLawyer();
+    refreshArrestPlea();
     if(arrestLawyerCheck.checked){ document.querySelector('[data-f="arrest.lawyer"]').focus(); }
   });
 
@@ -997,21 +1045,28 @@
       lines.push('* Suspect Tested For GSR & Was: ' + val('arrest.gsr'));
       lines.push('* Plead: ' + val('arrest.plead'));
       lines.push('* Transported to Bolingbroke by: ' + val('arrest.transport'));
-      if(arrestLawyerCheck.checked){
+      if(arrestSaoCheck.checked || arrestLawyerCheck.checked){
         lines.push('');
         lines.push(headerLine(style.sc, style.sl, style.len, 'Plea Deal / Reductions'));
         lines.push('');
-        lines.push('* SAO: ' + dash(val('arrest.sao')));
-        lines.push('* Time: ' + dash(val('arrest.pleaTime')));
-        lines.push('* Fine: $' + (val('arrest.fine') || '0'));
-        lines.push('* LAWYER: ' + dash(val('arrest.lawyer')));
-        lines.push('* Reduction: ' + (val('arrest.reduction') || '0') + '%');
+        if(arrestSaoCheck.checked){
+          lines.push('* SAO: ' + dash(val('arrest.sao')));
+          lines.push('* Time: ' + dash(val('arrest.pleaTime')));
+          lines.push('* Fine: $' + (val('arrest.fine') || '0'));
+        }
+        if(arrestLawyerCheck.checked){
+          lines.push('* LAWYER: ' + dash(val('arrest.lawyer')));
+          lines.push('* Reduction: ' + (val('arrest.reduction') || '0') + '%');
+        }
       }
       lines.push('');
       lines.push(headerLine(style.sc, style.sl, style.len, 'Evidence Information'));
       lines.push('Items Confiscated:');
       lines.push(linesFrom(val('arrest.evidence')).join('\n'));
     
+    lines.push('');
+    lines.push(headerLine(style.sc, style.sl, style.len, 'Summary'));
+    lines.push(dash(val('arrest.summary') || '[Insert Summary Here]'));
     return lines.filter(function(l){ return l !== undefined; }).join('\n');
   }
 
@@ -1035,6 +1090,9 @@
       lines.push('* Planted Items? ' + val('incident.hostagePlanted'));
       lines.push('* Given Ride? ' + val('incident.hostageRide'));
     
+    lines.push('');
+    lines.push(headerLine(style.sc, style.sl, style.len, 'Summary'));
+    lines.push(dash(val('hostage.summary') || '[Insert Summary Here]'));
     return lines.filter(function(l){ return l !== undefined; }).join('\n');
   }
 
@@ -1061,6 +1119,9 @@
       lines.push('* Citation/Charge: ' + (linesFrom(val('traffic.citation')).join(', ') || 'XXX'));
       lines.push('* Fine: $' + (val('traffic.fine') || '0'));
     
+    lines.push('');
+    lines.push(headerLine(style.sc, style.sl, style.len, 'Summary'));
+    lines.push(dash(val('traffic.summary') || '[Insert Summary Here]'));
     return lines.filter(function(l){ return l !== undefined; }).join('\n');
   }
 
@@ -1093,6 +1154,9 @@
       var charges = linesFrom(val('warrant.charges'));
       lines = lines.concat(charges.length ? charges : ['XXX']);
     
+    lines.push('');
+    lines.push(headerLine(style.sc, style.sl, style.len, 'Summary'));
+    lines.push(dash(val('warrant.summary') || '[Insert Summary Here]'));
     return lines.filter(function(l){ return l !== undefined; }).join('\n');
   }
 
@@ -1117,6 +1181,9 @@
       lines.push('* UNIMPOUND TIME: ' + dur + ' (' + fmtEST(impoundRelease(dur, impoundedAt)) + ')');
       lines.push('* STRIKED: ' + (document.getElementById('impoundStrike').checked ? '[X] Yes  [ ] No' : '[ ] Yes  [X] No'));
     
+    lines.push('');
+    lines.push(headerLine(style.sc, style.sl, style.len, 'Summary'));
+    lines.push(dash(val('impound.summary') || '[Insert Summary Here]'));
     return lines.filter(function(l){ return l !== undefined; }).join('\n');
   }
 
@@ -1147,6 +1214,9 @@
       lines.push('* Crush Date: ' + crushDate);
       lines.push('* Crush Outcome: ' + dash(val('vincrush.outcome')));
     
+    lines.push('');
+    lines.push(headerLine(style.sc, style.sl, style.len, 'Summary'));
+    lines.push(dash(val('vincrush.summary') || '[Insert Summary Here]'));
     return lines.filter(function(l){ return l !== undefined; }).join('\n');
   }
 
@@ -1193,6 +1263,14 @@
     lastOutput = buildReport();
     document.getElementById('outputBox').textContent = lastOutput;
     document.getElementById('copyNote').textContent = '';
+  });
+
+  /* manual selection + Ctrl+C: always copy plain text (no background/colour formatting) */
+  document.getElementById('outputBox').addEventListener('copy', function(e){
+    var sel = window.getSelection().toString();
+    if(!sel) return;
+    e.clipboardData.setData('text/plain', sel);
+    e.preventDefault();
   });
 
   document.getElementById('copyBtn').addEventListener('click', function(){
